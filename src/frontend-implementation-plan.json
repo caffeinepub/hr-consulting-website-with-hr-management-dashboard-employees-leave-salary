@@ -1,0 +1,77 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Professional redesign + accessible animations for Contact section (Home + Contact page)",
+  "requirements": [
+    {
+      "id": "REQ-22",
+      "summary": "Redesign HomePage #contact section and standalone Contact page with a consistent, more professional layout while preserving the existing ContactForm fields and submission behavior.",
+      "acceptanceCriteria": [
+        "The on-page Contact section (Home page section id=\"contact\") and the standalone Contact page present a clearly improved, professional layout (typography, spacing, card styling, and hierarchy) without removing any existing information or form fields.",
+        "The existing ContactForm submission flow remains unchanged: same validations, same success/error toasts, and still submits using the existing React Query mutation hook.",
+        "Mobile/tablet/desktop layouts remain responsive with no overlap/clipping and with comfortable spacing across breakpoints.",
+        "No new routes, navigation items, or backend APIs are introduced as part of this redesign."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/contact/ContactSection.tsx",
+          "operation": "create",
+          "description": "Create a shared, reusable ContactSection component used by both HomePage (section id=\"contact\") and ContactPage to ensure a consistent professional layout (two-column grid, clear hierarchy, consistent spacing), composing existing shadcn-ui components (Card, Button, etc.). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Replace the current inline Contact section markup with the new shared ContactSection component while keeping the section id=\"contact\" and all existing contact info content present; ensure no new routes/navigation are introduced."
+        },
+        {
+          "path": "frontend/src/pages/ContactPage.tsx",
+          "operation": "modify",
+          "description": "Refactor ContactPage to use the shared ContactSection component (or align to the same layout primitives) so the standalone page matches the redesigned Home contact experience without changing any text content, fields, or submission behavior."
+        },
+        {
+          "path": "frontend/src/components/contact/ContactForm.tsx",
+          "operation": "modify",
+          "description": "Apply visual-only polish to the existing form (spacing, grouping, container styling, consistent widths) by composing existing shadcn-ui Input/Textarea/Button/Label, without changing validations, toasts, mutation usage, field names, or placeholders. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "summary": "Add subtle entrance and micro-interaction animations for the Contact section (form + contact info) with reduced-motion support and no layout shift.",
+      "acceptanceCriteria": [
+        "The Contact section content animates into view in a subtle, professional way (e.g., fade/slide with stagger) when scrolled into view, affecting both the form area and the contact-info area/cards.",
+        "Interactive elements (links, cards, inputs, submit button) have subtle hover/focus animations that do not distract or reduce readability.",
+        "Animations respect user motion preferences: when the user has reduced motion enabled, animations are removed or significantly minimized (no large movement).",
+        "Animations do not cause layout shift (no reflow that changes layout height/width during animation) and do not block interaction with the form.",
+        "Keyboard navigation remains clear: focus states are visible and any animations do not hide or delay focus indicators."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useInView.ts",
+          "operation": "create",
+          "description": "Create a small IntersectionObserver-based hook to detect when the Contact section (and/or its child cards) enters the viewport to trigger entrance animations without impacting layout."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Add/extend Tailwind keyframes and animation utilities for subtle opacity+transform entrance effects (and optional stagger support) that can be gated behind motion-safe/motion-reduce variants to respect reduced-motion preferences."
+        },
+        {
+          "path": "frontend/src/components/contact/ContactSection.tsx",
+          "operation": "modify",
+          "description": "Integrate entrance animations triggered by useInView for the form area and the contact-info cards (e.g., fade/slide-in with light stagger), using transform/opacity only to avoid layout shift and applying motion-safe/motion-reduce classes for accessibility. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/contact/ContactForm.tsx",
+          "operation": "modify",
+          "description": "Add subtle micro-interactions for interactive elements (inputs, textarea, submit button) such as hover/focus transitions and gentle transform/shadow where appropriate, ensuring focus-visible rings remain immediate and clearly visible and respecting reduced-motion (motion-reduce) settings. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ContactPage.tsx",
+          "operation": "modify",
+          "description": "Ensure any remaining contact-info links/cards on the standalone Contact page use the same animation/micro-interaction treatment as the shared Contact section, with reduced-motion support and no interaction blocking."
+        }
+      ]
+    }
+  ]
+}

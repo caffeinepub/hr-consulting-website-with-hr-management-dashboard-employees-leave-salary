@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 13,
+  "summary": "Build a modern, professional HR consulting company website with core HR Management section (HR dashboard) for employee, leave, and salary management, plus recruitment features integrated with LinkedIn.",
+  "architectural_notes": [
+    "Support an authenticated HR-only dashboard/panel distinct from public marketing pages.",
+    "Store employee, leave, and payroll data in structured form to enable automatic calculations and easy updates.",
+    "Implement automatic leave and payroll calculations (leaves affect salary; PF and bonus included).",
+    "Integrate recruitment flow with LinkedIn (job posts and candidate redirection).",
+    "Set global background color to #131E3A across all pages (public site + HR dashboard).",
+    "Remove decorative/hero background images across the site; retain essential brand imagery such as the logo.",
+    "Office address text should be updated everywhere it appears (e.g., Contact page + footer) to: Nagpur, Maharashtra, India.",
+    "All header and footer navigation links should smoothly scroll to their corresponding on-page sections (single-page anchor navigation).",
+    "Enhance the entire Contact section (details + form) with professional, dynamic animations while keeping a corporate look and feel."
+  ],
+  "known_issues": [
+    "Footer is not working properly (user requested full footer fix: layout/links/visibility/spacing/responsiveness).",
+    "Deployment/build is failing (deployment snag encountered during deployment)."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-public-facing-hr-consulting-company-website-with-top-level-navigation-and-sections-pages-home-about-us-services-recruitment-and-contact",
+      "title": "Create a public-facing HR consulting company website with top-level navigation and sections/pages: Home, About Us, Services, Recruitment, and Contact.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-about-us-page-section-content-including-a-leadership-area-that-prominently-highlights-hr-director-vishwesh-shivankar",
+      "title": "Implement the About Us page/section content including a Leadership area that prominently highlights: “HR Director – Vishwesh Shivankar”.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-services-page-section-with-service-cards-sections-for-hr-consulting-payroll-management-compliance-legal-services-and-recruitment-services",
+      "title": "Implement the Services page/section with service cards/sections for: HR Consulting, Payroll Management, Compliance & Legal Services, and Recruitment Services.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-recruitment-page-section-that-allows-hr-to-create-job-role-entries-title-location-description-and-an-external-linkedin-url-and-provides-a-cta-that-redirects-candidates-to-the-specified-linkedin-url",
+      "title": "Implement a Recruitment page/section that allows HR to create job role entries (title, location, description, and an external LinkedIn URL) and provides a CTA that redirects candidates to the specified LinkedIn URL.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-contact-page-section-with-a-contact-form-name-email-message-and-a-dedicated-area-to-show-company-contact-details-email-phone-office-address-store-submitted-contact-messages-in-the-backend-for-later-viewing-from-the-hr-dashboard",
+      "title": "Implement a Contact page/section with a contact form (name, email, message) and a dedicated area to show company contact details (email, phone, office address). Store submitted contact messages in the backend for later viewing from the HR Dashboard.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dedicated-hr-dashboard-hr-panel-section-that-is-only-accessible-to-authenticated-users-via-internet-identity",
+      "title": "Add a dedicated HR Dashboard / HR Panel section that is only accessible to authenticated users via Internet Identity.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-employee-management-in-the-hr-dashboard-with-create-edit-functionality-for-employee-name-joining-date-salary-inr-pf-details-bonus-and-leave-balance",
+      "title": "Implement employee management in the HR Dashboard with create/edit functionality for: employee name, joining date, salary (₹ INR), PF details, bonus, and leave balance.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-per-employee-leave-management-that-supports-adding-editing-leave-entries-automatically-counts-total-leaves-taken-shows-remaining-leave-balance-and-uses-leave-data-in-salary-calculations",
+      "title": "Implement per-employee leave management that supports adding/editing leave entries, automatically counts total leaves taken, shows remaining leave balance, and uses leave data in salary calculations.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-salary-calculation-for-each-employee-in-inr-including-base-salary-deduction-based-on-leaves-pf-deduction-bonus-addition-and-a-clearly-displayed-final-payable-salary",
+      "title": "Implement salary calculation for each employee in ₹ INR, including: base salary, deduction based on leaves, PF deduction, bonus addition, and a clearly displayed final payable salary.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-application-is-fully-responsive-accessible-keyboard-navigation-readable-typography-good-contrast-and-uses-clean-dashboards-with-cards-and-tables-for-hr-workflows",
+      "title": "Ensure the application is fully responsive, accessible (keyboard navigation, readable typography, good contrast), and uses clean dashboards with cards and tables for HR workflows.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-coherent-visual-theme-across-the-entire-app-with-a-distinct-professional-hr-corporate-style-choose-a-non-blue-non-purple-palette-consistent-typography-spacing-and-component-styling",
+      "title": "Apply a coherent visual theme across the entire app with a distinct professional HR/corporate style (choose a non-blue/non-purple palette), consistent typography, spacing, and component styling.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-brand-images-to-the-frontend-and-use-them-on-the-public-site-e-g-header-logo-and-home-hero-visual-by-placing-them-under-frontend-public-assets-generated-and-referencing-them-directly-from-the-ui",
+      "title": "Add generated static brand images to the frontend and use them on the public site (e.g., header logo and home hero visual) by placing them under frontend/public/assets/generated and referencing them directly from the UI.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-hex-background-color-131e3a-as-the-global-site-background-across-the-entire-application-all-public-pages-and-all-hr-dashboard-pages-ensuring-the-default-background-behind-all-layouts-is-131e3a",
+      "title": "Apply the hex background color #131E3A as the global site background across the entire application (all public pages and all HR Dashboard pages), ensuring the default background behind all layouts is #131E3A.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-only-decorative-background-hero-images-site-wide-keep-functional-brand-images-such-as-the-logo-specifically-remove-the-home-page-hero-background-image-overlay-so-the-hero-section-uses-the-solid-background-instead",
+      "title": "Remove only decorative background/hero images site-wide (keep functional/brand images such as the logo). Specifically remove the Home page hero background image overlay so the hero section uses the solid background instead.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-public-site-footer-in-frontend-src-components-publiclayout-tsx-so-it-works-properly-across-the-entire-app-including-correct-layout-spacing-visibility-link-behavior-and-responsiveness-on-mobile-tablet-desktop-without-changing-the-footer-s-intended-content-or-adding-new-sections",
+      "title": "Fix the public site footer in `frontend/src/components/PublicLayout.tsx` so it works properly across the entire app, including correct layout, spacing, visibility, link behavior, and responsiveness on mobile/tablet/desktop, without changing the footer’s intended content or adding new sections.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-office-address-everywhere-it-appears-in-the-frontend-to-exactly-nagpur-maharashtra-india-including-at-minimum-the-contact-page-contact-details-and-the-footer-contact-block",
+      "title": "Update the office address everywhere it appears in the frontend to exactly: “Nagpur, Maharashtra, India”, including (at minimum) the Contact page contact details and the footer contact block.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-current-build-deployment-failure-so-the-project-can-successfully-build-and-deploy-to-the-internet-computer-without-errors",
+      "title": "Diagnose and fix the current build/deployment failure so the project can successfully build and deploy to the Internet Computer without errors.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-public-site-navigation-links-in-frontend-src-components-publiclayout-tsx-desktop-header-nav-mobile-menu-nav-and-footer-quick-links-so-clicking-home-about-us-services-recruitment-contact-performs-smooth-scrolling-to-the-matching-section-on-the-same-page-rather-than-navigating-to-separate-routes",
+      "title": "Update all public-site navigation links in `frontend/src/components/PublicLayout.tsx` (desktop header nav, mobile menu nav, and footer “Quick Links”) so clicking Home / About Us / Services / Recruitment / Contact performs smooth scrolling to the matching section on the same page, rather than navigating to separate routes.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-public-page-being-displayed-contains-scroll-targets-for-all-navigation-items-by-adding-stable-unique-section-anchors-ids-for-home-about-us-services-recruitment-and-contact-so-smooth-scroll-has-a-concrete-destination-for-each-link",
+      "title": "Ensure the public page being displayed contains scroll targets for all navigation items by adding stable, unique section anchors/IDs for: Home, About Us, Services, Recruitment, and Contact (so smooth-scroll has a concrete destination for each link).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-if-a-user-clicks-a-navigation-link-while-they-are-on-a-non-public-route-e-g-about-services-recruitment-contact-or-any-other-public-route-navigate-to-the-main-public-page-that-contains-the-anchored-sections-and-then-perform-the-smooth-scroll-to-the-requested-section",
+      "title": "If a user clicks a navigation link while they are on a non-public route (e.g., `/about`, `/services`, `/recruitment`, `/contact`, or any other public route), navigate to the main public page that contains the anchored sections and then perform the smooth scroll to the requested section.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-entire-public-contact-experience-to-look-more-attractive-and-professional-applying-consistent-visual-improvements-to-both-a-the-on-page-contact-section-on-the-main-public-page-homepage-section-with-id-contact-and-b-the-standalone-contact-page-while-keeping-the-existing-fields-content-and-submission-behavior-unchanged",
+      "title": "Redesign the entire public Contact experience to look more attractive and professional, applying consistent visual improvements to both (a) the on-page Contact section on the main public page (HomePage section with id=\"contact\") and (b) the standalone Contact page, while keeping the existing fields, content, and submission behavior unchanged.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-professional-dynamic-animations-to-the-entire-contact-section-form-contact-info-including-1-an-entrance-animation-when-the-section-cards-become-visible-and-2-subtle-hover-focus-micro-interactions-on-interactive-elements-while-respecting-accessibility-best-practices-including-reduced-motion-preferences",
+      "title": "Add professional, dynamic animations to the entire Contact section (form + contact info) including (1) an entrance animation when the section/cards become visible and (2) subtle hover/focus micro-interactions on interactive elements, while respecting accessibility best practices (including reduced-motion preferences).",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Public-facing HR consulting website with sections: Home, About (leadership), Services, Recruitment, Contact",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "HR Director/leadership content: highlight HR Director Vishwesh Shivankar in About/Leadership section",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Services pages/sections for HR Consulting, Payroll Management, Compliance & Legal Services, Recruitment Services",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Recruitment section with LinkedIn integration: post job roles and redirect candidates to LinkedIn profiles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Contact section with contact form and company contact details (email, phone, office address)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Dedicated HR Management dashboard/panel for HR users",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Employee management in HR dashboard: add/edit employee details (name, joining date, salary in ₹ INR, PF details, bonus, leave balance)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Leave management per employee: editable leaves, auto-count leaves taken, show remaining balance; leave impacts salary calculation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Salary calculation in ₹ INR: auto-calculate base, leave-based deductions, PF deduction, bonus addition; display final payable salary",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "UI/UX requirements: modern corporate design, responsive, accessible, HR-friendly dashboards (cards/tables), easy-to-edit fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Persist all HR Dashboard data (employees, leave entries, job roles, contact messages) in the Motoko backend so it survives page reloads and canister upgrades (using stable storage patterns as appropriate for new state).",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Apply global site background color #131E3A across the entire website (public pages and HR dashboard)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Remove only decorative background/hero images site-wide while keeping other images (e.g., logo)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Implement smooth-scroll navigation for all header + footer navigation links to scroll to their matching on-page sections (Home, About, Services, Recruitment, Contact)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Redesign entire Contact section to look more attractive with professional, dynamic animations (applies to contact info + form)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "HR Consulting Website with HR Management Dashboard (Employees, Leave, Salary)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

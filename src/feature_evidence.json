@@ -1,0 +1,50 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-redesign-the-entire-public-contact-experience-to-look-more-attractive-and-professional-applying-consistent-visual-improvements-to-both-a-the-on-page-contact-section-on-the-main-public-page-homepage-section-with-id-contact-and-b-the-standalone-contact-page-while-keeping-the-existing-fields-content-and-submission-behavior-unchanged",
+      "featureTitle": "Redesign the entire public Contact experience to look more attractive and professional, applying consistent visual improvements to both (a) the on-page Contact section on the main public page (HomePage section with id=\"contact\") and (b) the standalone Contact page, while keeping the existing fields, content, and submission behavior unchanged.",
+      "files": [
+        "frontend/src/components/contact/ContactForm.tsx",
+        "frontend/src/components/contact/ContactSection.tsx",
+        "frontend/src/pages/ContactPage.tsx",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-professional-dynamic-animations-to-the-entire-contact-section-form-contact-info-including-1-an-entrance-animation-when-the-section-cards-become-visible-and-2-subtle-hover-focus-micro-interactions-on-interactive-elements-while-respecting-accessibility-best-practices-including-reduced-motion-preferences",
+      "featureTitle": "Add professional, dynamic animations to the entire Contact section (form + contact info) including (1) an entrance animation when the section/cards become visible and (2) subtle hover/focus micro-interactions on interactive elements, while respecting accessibility best practices (including reduced-motion preferences).",
+      "files": [
+        "frontend/src/components/contact/ContactForm.tsx",
+        "frontend/src/components/contact/ContactSection.tsx",
+        "frontend/src/hooks/useInView.ts",
+        "frontend/src/pages/ContactPage.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-23"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
