@@ -2,13 +2,14 @@ import { ReactNode } from 'react';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
 import AccessDeniedScreen from './AccessDeniedScreen';
 
-interface ProtectedRouteProps {
+interface RoleProtectedRouteProps {
   children: ReactNode;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function RoleProtectedRoute({ children }: RoleProtectedRouteProps) {
   const { identity, isInitializing } = useInternetIdentity();
 
+  // Show loading while checking authentication
   if (isInitializing) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -20,9 +21,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+  // Not logged in - show login prompt
   if (!identity) {
     return <AccessDeniedScreen reason="unauthenticated" />;
   }
 
+  // Authenticated user - render protected content
   return <>{children}</>;
 }

@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Redesign and animate the public Contact experience (Home page section `id="contact"` and the standalone Contact page) to be more professional and dynamic, without changing fields, content, or submission behavior.
+**Goal:** Make the public site header and footer logo/brand areas behave as Home buttons that always navigate to the main homepage route (`/`) via client-side routing.
 
 **Planned changes:**
-- Update the layout and visual styling of the on-page Contact section and the standalone Contact page (typography, spacing, hierarchy, card styling) while keeping all existing information and form fields intact.
-- Add subtle entrance animations for the Contact form and contact-info areas when they scroll into view.
-- Add subtle hover/focus micro-interactions for interactive elements (links, cards, inputs, submit button) with clear focus states.
-- Ensure animations respect reduced-motion preferences and do not introduce layout shift or interfere with form interaction.
+- Update the header logo area in `frontend/src/components/PublicLayout.tsx` to navigate to `/` on click using client-side navigation, from any current route.
+- Update the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` to navigate to `/` on click using client-side navigation, matching the header behavior.
+- Ensure both logo click targets are keyboard-accessible and appropriately labeled for accessibility, without changing existing nav behaviors (smooth-scroll links, HR Dashboard routing, mobile menu behavior).
 
-**User-visible outcome:** The Contact section and Contact page look more polished and engaging, with tasteful animations and micro-interactions, while the form works exactly as before (same fields, validations, and success/error toasts).
+**User-visible outcome:** Clicking the site logo in the header or footer takes the user to the homepage (`/`) from anywhere in the app without a full page reload, and the logo is accessible via keyboard.

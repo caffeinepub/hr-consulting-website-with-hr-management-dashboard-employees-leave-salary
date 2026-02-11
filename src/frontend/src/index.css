@@ -79,14 +79,19 @@
     }
     
     html {
-        background-color: #131E3A;
+        background-color: #131E3A !important;
         scroll-behavior: smooth;
     }
     
     body {
-        @apply bg-background text-foreground;
+        @apply text-foreground;
         font-feature-settings: "rlig" 1, "calt" 1;
-        background-color: #131E3A;
+        background-color: #131E3A !important;
+    }
+
+    #root {
+        background-color: #131E3A !important;
+        min-height: 100vh;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -117,5 +122,98 @@
     /* Scroll margin for sections to account for sticky header */
     .scroll-mt-16 {
         scroll-margin-top: 4rem;
+    }
+
+    /* Hero headline word animation */
+    .hero-word-animate {
+        opacity: 0;
+        animation: hero-word-reveal 0.8s ease-out forwards;
+    }
+
+    @keyframes hero-word-reveal {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Mobile menu panel styling */
+    .mobile-menu-panel {
+        background: linear-gradient(135deg, oklch(0.20 0.06 240) 0%, oklch(0.18 0.05 240) 100%);
+        backdrop-filter: blur(20px);
+    }
+
+    .mobile-menu-item {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mobile-menu-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 0;
+        background: linear-gradient(to bottom, oklch(var(--primary)), oklch(var(--accent)));
+        border-radius: 0 4px 4px 0;
+        transition: height 0.3s ease-out;
+    }
+
+    .mobile-menu-item:hover::before,
+    .mobile-menu-item:focus-visible::before {
+        height: 60%;
+    }
+
+    /* About section background */
+    .about-section-bg {
+        background: linear-gradient(
+            to bottom,
+            #131E3A 0%,
+            oklch(0.20 0.06 240) 50%,
+            #131E3A 100%
+        );
+    }
+
+    /* About card styling */
+    .about-card {
+        background: oklch(var(--card));
+        backdrop-filter: blur(10px);
+    }
+
+    /* Reduced motion support for all animations */
+    @media (prefers-reduced-motion: reduce) {
+        .motion-safe\:animate-fade-in,
+        .motion-safe\:hover\:opacity-80,
+        .motion-safe\:focus-visible\:opacity-80,
+        .motion-safe\:transition-opacity,
+        .motion-safe\:transition-transform,
+        .motion-safe\:transition-all,
+        .motion-safe\:group-hover\:w-3\/4,
+        .motion-safe\:hover\:border-primary\/50,
+        .motion-safe\:hover\:shadow-lg,
+        .motion-safe\:duration-300 {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .hero-word-animate {
+            opacity: 1 !important;
+            animation: none !important;
+            transform: none !important;
+        }
+
+        .mobile-menu-item::before {
+            transition: none !important;
+        }
+
+        html {
+            scroll-behavior: auto;
+        }
     }
 }

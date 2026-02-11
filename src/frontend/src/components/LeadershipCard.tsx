@@ -9,20 +9,20 @@ interface LeadershipCardProps {
 
 export default function LeadershipCard({ name, title, description }: LeadershipCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-8 w-8 text-primary" />
+    <Card className="about-card border-2 motion-safe:hover:shadow-lg motion-safe:transition-all motion-safe:duration-300">
+      <CardHeader className="pb-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0 ring-4 ring-primary/10">
+            <User className="h-10 w-10 text-primary" />
           </div>
-          <div>
-            <CardTitle className="text-2xl">{name}</CardTitle>
-            <p className="text-lg text-muted-foreground">{title}</p>
+          <div className="text-center sm:text-left">
+            <CardTitle className="text-2xl md:text-3xl mb-2">{name}</CardTitle>
+            <p className="text-lg md:text-xl text-primary font-medium">{title}</p>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground leading-relaxed">{description}</p>
+        <p className="text-base md:text-lg text-muted-foreground leading-relaxed">{description}</p>
       </CardContent>
     </Card>
   );

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Employee, JobRole, ContactMessage, LeaveEntry, UserProfile } from '../backend';
+import type { Employee, JobRole, ContactMessage, LeaveEntry, UserProfile, UserRole, UserInfo, QuickLeaveMarkRequest } from '../backend';
+import { Principal } from '@dfinity/principal';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
@@ -33,6 +34,81 @@ export function useSaveCallerUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
+export function useGetCallerRole() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<UserRole>({
+    queryKey: ['callerRole'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerRole();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
+export function useIsCallerAdmin() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<boolean>({
+    queryKey: ['isCallerAdmin'],
+    queryFn: async () => {
+      if (!actor) return false;
+      try {
+        return await actor.isCallerAdmin();
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
+export function useListAllUsers() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<UserInfo[]>({
+    queryKey: ['allUsers'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listAllUsers();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useAssignUserRole() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { user: Principal; role: UserRole }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.assignUserRole(data.user, data.role);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['callerRole'] });
+      queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
     },
   });
 }
@@ -132,6 +208,23 @@ export function useAddLeaveEntry() {
     }) => {
       if (!actor) throw new Error('Actor not available');
       return actor.addLeaveEntry(data.employeeId, data.startDate, data.endDate, data.reason);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['leaveEntries', Number(variables.employeeId)] });
+      queryClient.invalidateQueries({ queryKey: ['employee', Number(variables.employeeId)] });
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+    },
+  });
+}
+
+export function useQuickLeaveMark() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: QuickLeaveMarkRequest) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.quickLeaveMark(request);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['leaveEntries', Number(variables.employeeId)] });

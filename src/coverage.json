@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-10T19:26:16.627Z",
+  "generatedAt": "2026-02-11T04:19:57.187Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,39 +11,25 @@
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-22",
-        "summary": "Redesign the entire public Contact experience to look more attractive and professional, applying consistent visual improvements to both (a) the on-page Contact section on the main public page (HomePage section with id=\"contact\") and (b) the standalone Contact page, while keeping the existing fields, content, and submission behavior unchanged.",
+        "id": "REQ-61",
+        "summary": "Update the public site logo area in `frontend/src/components/PublicLayout.tsx` so that clicking the logo navigates the user directly to the main homepage route (`/`) from any current route.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/contact/ContactSection.tsx",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx",
-          "frontend/src/components/contact/ContactForm.tsx"
+          "frontend/src/components/PublicLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/contact/ContactSection.tsx",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx",
-          "frontend/src/components/contact/ContactForm.tsx"
+          "frontend/src/components/PublicLayout.tsx"
         ]
       },
       {
-        "id": "REQ-23",
-        "summary": "Add professional, dynamic animations to the entire Contact section (form + contact info) including (1) an entrance animation when the section/cards become visible and (2) subtle hover/focus micro-interactions on interactive elements, while respecting accessibility best practices (including reduced-motion preferences).",
+        "id": "REQ-62",
+        "summary": "Make the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` also navigate to the main homepage route (`/`) when clicked, matching the header logo behavior.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useInView.ts",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/contact/ContactSection.tsx",
-          "frontend/src/components/contact/ContactForm.tsx",
-          "frontend/src/pages/ContactPage.tsx"
+          "frontend/src/components/PublicLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useInView.ts",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/contact/ContactSection.tsx",
-          "frontend/src/components/contact/ContactForm.tsx",
-          "frontend/src/pages/ContactPage.tsx"
+          "frontend/src/components/PublicLayout.tsx"
         ]
       }
     ]
@@ -53,12 +39,7 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/contact/ContactForm.tsx",
-    "frontend/src/components/contact/ContactSection.tsx",
-    "frontend/src/hooks/useInView.ts",
-    "frontend/src/pages/ContactPage.tsx",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/tailwind.config.js",
+    "frontend/src/components/PublicLayout.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

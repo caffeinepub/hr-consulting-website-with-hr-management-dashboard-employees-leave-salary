@@ -49,16 +49,28 @@ export interface LeaveEntry {
   'createdAt' : bigint,
   'isOpen' : boolean,
   'employeeId' : EmployeeId,
+  'leaveType' : string,
   'startDate' : bigint,
   'reason' : string,
 }
 export type LeaveId = bigint;
 export interface Location { 'country' : string, 'city' : string }
+export interface QuickLeaveMarkRequest {
+  'employeeId' : EmployeeId,
+  'leaveDate' : bigint,
+  'leaveType' : string,
+  'reason' : string,
+}
 export interface Salary {
   'base' : bigint,
   'finalPayable' : bigint,
   'bonus' : bigint,
   'pfDeduction' : bigint,
+}
+export interface UserInfo {
+  'principal' : Principal,
+  'role' : UserRole,
+  'profile' : [] | [UserProfile],
 }
 export interface UserProfile { 'name' : string, 'email' : string }
 export type UserRole = { 'admin' : null } |
@@ -77,6 +89,7 @@ export interface _SERVICE {
   'getAllContactMessages' : ActorMethod<[], Array<ContactMessage>>,
   'getAllEmployeesSorted' : ActorMethod<[], Array<Employee>>,
   'getAllOpenJobRoles' : ActorMethod<[], Array<JobRole>>,
+  'getCallerRole' : ActorMethod<[], UserRole>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getContactMessage' : ActorMethod<[ContactMessageId], [] | [ContactMessage]>,
@@ -85,10 +98,12 @@ export interface _SERVICE {
   'getEmployeeLeaveEntries' : ActorMethod<[EmployeeId], Array<LeaveEntry>>,
   'getOpenJobRolesCount' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserRole' : ActorMethod<[Principal], UserRole>,
   'hasPermission' : ActorMethod<[Principal, UserRole], boolean>,
-  'initializeSystem' : ActorMethod<[string, string], undefined>,
   'isAdmin' : ActorMethod<[Principal], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'listAllUsers' : ActorMethod<[], Array<UserInfo>>,
+  'quickLeaveMark' : ActorMethod<[QuickLeaveMarkRequest], LeaveId>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'submitContactMessage' : ActorMethod<
     [string, string, string],

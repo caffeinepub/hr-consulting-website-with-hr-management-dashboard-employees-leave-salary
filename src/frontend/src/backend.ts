@@ -99,6 +99,19 @@ export interface Salary {
     bonus: bigint;
     pfDeduction: bigint;
 }
+export type ContactMessageId = bigint;
+export interface QuickLeaveMarkRequest {
+    employeeId: EmployeeId;
+    leaveDate: bigint;
+    leaveType: string;
+    reason: string;
+}
+export interface UserInfo {
+    principal: Principal;
+    role: UserRole;
+    profile?: UserProfile;
+}
+export type JobRoleId = bigint;
 export interface LeaveEntry {
     id: LeaveId;
     status: string;
@@ -106,6 +119,7 @@ export interface LeaveEntry {
     createdAt: bigint;
     isOpen: boolean;
     employeeId: EmployeeId;
+    leaveType: string;
     startDate: bigint;
     reason: string;
 }
@@ -118,8 +132,6 @@ export interface JobRole {
     linkedInUrl: string;
     location: Location;
 }
-export type ContactMessageId = bigint;
-export type EmployeeId = bigint;
 export interface ContactMessage {
     id: ContactMessageId;
     name: string;
@@ -128,6 +140,7 @@ export interface ContactMessage {
     message: string;
     timestamp: bigint;
 }
+export type EmployeeId = bigint;
 export interface Employee {
     id: EmployeeId;
     salary: Salary;
@@ -145,7 +158,6 @@ export interface UserProfile {
     name: string;
     email: string;
 }
-export type JobRoleId = bigint;
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -161,6 +173,7 @@ export interface backendInterface {
     getAllContactMessages(): Promise<Array<ContactMessage>>;
     getAllEmployeesSorted(): Promise<Array<Employee>>;
     getAllOpenJobRoles(): Promise<Array<JobRole>>;
+    getCallerRole(): Promise<UserRole>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getContactMessage(messageId: ContactMessageId): Promise<ContactMessage | null>;
@@ -169,15 +182,17 @@ export interface backendInterface {
     getEmployeeLeaveEntries(employeeId: EmployeeId): Promise<Array<LeaveEntry>>;
     getOpenJobRolesCount(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getUserRole(user: Principal): Promise<UserRole>;
     hasPermission(user: Principal, requiredRole: UserRole): Promise<boolean>;
-    initializeSystem(adminToken: string, userProvidedToken: string): Promise<void>;
     isAdmin(user: Principal): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
+    listAllUsers(): Promise<Array<UserInfo>>;
+    quickLeaveMark(request: QuickLeaveMarkRequest): Promise<LeaveId>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     submitContactMessage(name: string, email: string, message: string): Promise<ContactMessageId>;
     updateEmployeeSalary(employeeId: EmployeeId, newBaseSalary: bigint): Promise<void>;
 }
-import type { ContactMessage as _ContactMessage, Employee as _Employee, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { ContactMessage as _ContactMessage, Employee as _Employee, UserInfo as _UserInfo, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -306,32 +321,46 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getCallerRole(): Promise<UserRole> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerRole();
+                return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerRole();
+            return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserProfile();
-                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserProfile();
-            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
         }
     }
     async getContactMessage(arg0: ContactMessageId): Promise<ContactMessage | null> {
@@ -408,14 +437,28 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getUserRole(arg0: Principal): Promise<UserRole> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserRole(arg0);
+                return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserRole(arg0);
+            return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
         }
     }
     async hasPermission(arg0: Principal, arg1: UserRole): Promise<boolean> {
@@ -429,20 +472,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.hasPermission(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
-            return result;
-        }
-    }
-    async initializeSystem(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.initializeSystem(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.initializeSystem(arg0, arg1);
             return result;
         }
     }
@@ -471,6 +500,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async listAllUsers(): Promise<Array<UserInfo>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listAllUsers();
+                return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listAllUsers();
+            return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async quickLeaveMark(arg0: QuickLeaveMarkRequest): Promise<LeaveId> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.quickLeaveMark(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.quickLeaveMark(arg0);
             return result;
         }
     }
@@ -517,10 +574,13 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n5(_uploadFile, _downloadFile, value);
+function from_candid_UserInfo_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserInfo): UserInfo {
+    return from_candid_record_n10(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+function from_candid_UserRole_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n4(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_ContactMessage]): ContactMessage | null {
@@ -529,7 +589,22 @@ function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Employee]): Employee | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    principal: Principal;
+    role: _UserRole;
+    profile: [] | [_UserProfile];
+}): {
+    principal: Principal;
+    role: UserRole;
+    profile?: UserProfile;
+} {
+    return {
+        principal: value.principal,
+        role: from_candid_UserRole_n3(_uploadFile, _downloadFile, value.role),
+        profile: record_opt_to_undefined(from_candid_opt_n5(_uploadFile, _downloadFile, value.profile))
+    };
+}
+function from_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;
@@ -537,6 +612,9 @@ function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uin
     guest: null;
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_UserInfo>): Array<UserInfo> {
+    return value.map((x)=>from_candid_UserInfo_n9(_uploadFile, _downloadFile, x));
 }
 function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);

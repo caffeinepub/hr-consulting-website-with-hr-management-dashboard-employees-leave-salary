@@ -64,7 +64,19 @@ export const LeaveEntry = IDL.Record({
   'createdAt' : IDL.Int,
   'isOpen' : IDL.Bool,
   'employeeId' : EmployeeId,
+  'leaveType' : IDL.Text,
   'startDate' : IDL.Int,
+  'reason' : IDL.Text,
+});
+export const UserInfo = IDL.Record({
+  'principal' : IDL.Principal,
+  'role' : UserRole,
+  'profile' : IDL.Opt(UserProfile),
+});
+export const QuickLeaveMarkRequest = IDL.Record({
+  'employeeId' : EmployeeId,
+  'leaveDate' : IDL.Int,
+  'leaveType' : IDL.Text,
   'reason' : IDL.Text,
 });
 
@@ -86,6 +98,7 @@ export const idlService = IDL.Service({
   'getAllContactMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
   'getAllEmployeesSorted' : IDL.Func([], [IDL.Vec(Employee)], ['query']),
   'getAllOpenJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
+  'getCallerRole' : IDL.Func([], [UserRole], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getContactMessage' : IDL.Func(
@@ -106,10 +119,12 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
   'hasPermission' : IDL.Func([IDL.Principal, UserRole], [IDL.Bool], ['query']),
-  'initializeSystem' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'isAdmin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'listAllUsers' : IDL.Func([], [IDL.Vec(UserInfo)], ['query']),
+  'quickLeaveMark' : IDL.Func([QuickLeaveMarkRequest], [LeaveId], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'submitContactMessage' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text],
@@ -175,7 +190,19 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : IDL.Int,
     'isOpen' : IDL.Bool,
     'employeeId' : EmployeeId,
+    'leaveType' : IDL.Text,
     'startDate' : IDL.Int,
+    'reason' : IDL.Text,
+  });
+  const UserInfo = IDL.Record({
+    'principal' : IDL.Principal,
+    'role' : UserRole,
+    'profile' : IDL.Opt(UserProfile),
+  });
+  const QuickLeaveMarkRequest = IDL.Record({
+    'employeeId' : EmployeeId,
+    'leaveDate' : IDL.Int,
+    'leaveType' : IDL.Text,
     'reason' : IDL.Text,
   });
   
@@ -201,6 +228,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getAllEmployeesSorted' : IDL.Func([], [IDL.Vec(Employee)], ['query']),
     'getAllOpenJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
+    'getCallerRole' : IDL.Func([], [UserRole], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getContactMessage' : IDL.Func(
@@ -221,14 +249,16 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
     'hasPermission' : IDL.Func(
         [IDL.Principal, UserRole],
         [IDL.Bool],
         ['query'],
       ),
-    'initializeSystem' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'isAdmin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'listAllUsers' : IDL.Func([], [IDL.Vec(UserInfo)], ['query']),
+    'quickLeaveMark' : IDL.Func([QuickLeaveMarkRequest], [LeaveId], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'submitContactMessage' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text],

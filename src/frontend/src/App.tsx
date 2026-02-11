@@ -2,6 +2,7 @@ import { createRouter, createRoute, createRootRoute, RouterProvider, Outlet } fr
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
+import ServiceDetailPage from './pages/ServiceDetailPage';
 import RecruitmentPage from './pages/RecruitmentPage';
 import ContactPage from './pages/ContactPage';
 import PublicLayout from './components/PublicLayout';
@@ -10,16 +11,21 @@ import EmployeesPage from './pages/hr/EmployeesPage';
 import EmployeeDetailPage from './pages/hr/EmployeeDetailPage';
 import JobRolesPage from './pages/hr/JobRolesPage';
 import ContactMessagesPage from './pages/hr/ContactMessagesPage';
+import QuickLeaveMarkPage from './pages/hr/QuickLeaveMarkPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
 
-const rootRoute = createRootRoute({
-  component: () => (
+function RootComponent() {
+  return (
     <>
       <ProfileSetupDialog />
       <Outlet />
     </>
-  ),
+  );
+}
+
+const rootRoute = createRootRoute({
+  component: RootComponent,
 });
 
 const publicRoute = createRoute({
@@ -44,6 +50,12 @@ const servicesRoute = createRoute({
   getParentRoute: () => publicRoute,
   path: '/services',
   component: ServicesPage,
+});
+
+const serviceDetailRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: '/services/$slug',
+  component: ServiceDetailPage,
 });
 
 const recruitmentRoute = createRoute({
@@ -92,11 +104,18 @@ const hrContactMessagesRoute = createRoute({
   component: ContactMessagesPage,
 });
 
+const hrQuickLeaveMarkRoute = createRoute({
+  getParentRoute: () => hrRoute,
+  path: '/quick-leave',
+  component: QuickLeaveMarkPage,
+});
+
 const routeTree = rootRoute.addChildren([
   publicRoute.addChildren([
     homeRoute,
     aboutRoute,
     servicesRoute,
+    serviceDetailRoute,
     recruitmentRoute,
     contactRoute,
   ]),
@@ -105,6 +124,7 @@ const routeTree = rootRoute.addChildren([
     hrEmployeeDetailRoute,
     hrJobRolesRoute,
     hrContactMessagesRoute,
+    hrQuickLeaveMarkRoute,
   ]),
 ]);
 
