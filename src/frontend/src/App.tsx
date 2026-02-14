@@ -5,6 +5,10 @@ import ServicesPage from './pages/ServicesPage';
 import ServiceDetailPage from './pages/ServiceDetailPage';
 import RecruitmentPage from './pages/RecruitmentPage';
 import ContactPage from './pages/ContactPage';
+import TeamPage from './pages/TeamPage';
+import ComplianceFirstPage from './pages/ComplianceFirstPage';
+import TailoredSolutionsPage from './pages/TailoredSolutionsPage';
+import GamePage from './pages/GamePage';
 import PublicLayout from './components/PublicLayout';
 import HrLayout from './pages/hr/HrLayout';
 import EmployeesPage from './pages/hr/EmployeesPage';
@@ -12,7 +16,13 @@ import EmployeeDetailPage from './pages/hr/EmployeeDetailPage';
 import JobRolesPage from './pages/hr/JobRolesPage';
 import ContactMessagesPage from './pages/hr/ContactMessagesPage';
 import QuickLeaveMarkPage from './pages/hr/QuickLeaveMarkPage';
+import TasksPage from './pages/hr/TasksPage';
+import HrEmployeeTasksPage from './pages/hr/HrEmployeeTasksPage';
+import HrEmployeeSalaryPage from './pages/hr/HrEmployeeSalaryPage';
+import HrEmployeePayslipsPage from './pages/hr/HrEmployeePayslipsPage';
+import EmployeeDashboardPage from './pages/employee/EmployeeDashboardPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
 
 function RootComponent() {
@@ -70,13 +80,47 @@ const contactRoute = createRoute({
   component: ContactPage,
 });
 
+const teamRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: '/team',
+  component: TeamPage,
+});
+
+const complianceFirstRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: '/compliance-first',
+  component: ComplianceFirstPage,
+});
+
+const tailoredSolutionsRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: '/tailored-solutions',
+  component: TailoredSolutionsPage,
+});
+
+const gameRoute = createRoute({
+  getParentRoute: () => publicRoute,
+  path: '/game',
+  component: GamePage,
+});
+
+const employeeDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employee-dashboard',
+  component: () => (
+    <ProtectedRoute>
+      <EmployeeDashboardPage />
+    </ProtectedRoute>
+  ),
+});
+
 const hrRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/hr',
   component: () => (
-    <ProtectedRoute>
+    <AdminProtectedRoute>
       <HrLayout />
-    </ProtectedRoute>
+    </AdminProtectedRoute>
   ),
 });
 
@@ -90,6 +134,24 @@ const hrEmployeeDetailRoute = createRoute({
   getParentRoute: () => hrRoute,
   path: '/employees/$employeeId',
   component: EmployeeDetailPage,
+});
+
+const hrEmployeeTasksRoute = createRoute({
+  getParentRoute: () => hrRoute,
+  path: '/employees/$employeeId/tasks',
+  component: HrEmployeeTasksPage,
+});
+
+const hrEmployeeSalaryRoute = createRoute({
+  getParentRoute: () => hrRoute,
+  path: '/employees/$employeeId/salary',
+  component: HrEmployeeSalaryPage,
+});
+
+const hrEmployeePayslipsRoute = createRoute({
+  getParentRoute: () => hrRoute,
+  path: '/employees/$employeeId/payslips',
+  component: HrEmployeePayslipsPage,
 });
 
 const hrJobRolesRoute = createRoute({
@@ -110,6 +172,12 @@ const hrQuickLeaveMarkRoute = createRoute({
   component: QuickLeaveMarkPage,
 });
 
+const hrTasksRoute = createRoute({
+  getParentRoute: () => hrRoute,
+  path: '/tasks',
+  component: TasksPage,
+});
+
 const routeTree = rootRoute.addChildren([
   publicRoute.addChildren([
     homeRoute,
@@ -118,13 +186,22 @@ const routeTree = rootRoute.addChildren([
     serviceDetailRoute,
     recruitmentRoute,
     contactRoute,
+    teamRoute,
+    complianceFirstRoute,
+    tailoredSolutionsRoute,
+    gameRoute,
   ]),
+  employeeDashboardRoute,
   hrRoute.addChildren([
     hrEmployeesRoute,
     hrEmployeeDetailRoute,
+    hrEmployeeTasksRoute,
+    hrEmployeeSalaryRoute,
+    hrEmployeePayslipsRoute,
     hrJobRolesRoute,
     hrContactMessagesRoute,
     hrQuickLeaveMarkRoute,
+    hrTasksRoute,
   ]),
 ]);
 

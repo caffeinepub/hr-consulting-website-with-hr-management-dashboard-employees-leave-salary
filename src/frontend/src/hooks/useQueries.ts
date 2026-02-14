@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Employee, JobRole, ContactMessage, LeaveEntry, UserProfile, UserRole, UserInfo, QuickLeaveMarkRequest } from '../backend';
+import { useInternetIdentity } from './useInternetIdentity';
+import type { Employee, JobRole, ContactMessage, LeaveEntry, UserProfile, UserRole, UserInfo, QuickLeaveMarkRequest, Task, TaskUpdate, Payslip } from '../backend';
+import { TaskPriority } from '../backend';
 import { Principal } from '@dfinity/principal';
 
 export function useGetCallerUserProfile() {
@@ -136,6 +138,28 @@ export function useGetEmployee(employeeId: number) {
       return actor.getEmployee(BigInt(employeeId));
     },
     enabled: !!actor && !isFetching && employeeId > 0,
+  });
+}
+
+export function useGetAssociatedEmployee() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<Employee | null>({
+    queryKey: ['associatedEmployee', identity?.getPrincipal().toString()],
+    queryFn: async () => {
+      if (!actor || !identity) return null;
+      try {
+        const employeeId = await actor.getAssociatedEmployeeId(identity.getPrincipal());
+        if (!employeeId) return null;
+        return actor.getEmployee(employeeId);
+      } catch (error) {
+        console.error('Error fetching associated employee:', error);
+        return null;
+      }
+    },
+    enabled: !!actor && !isFetching && !!identity,
+    retry: false,
   });
 }
 
@@ -310,6 +334,138 @@ export function useSubmitContactMessage() {
     mutationFn: async (data: { name: string; email: string; message: string }) => {
       if (!actor) throw new Error('Actor not available');
       return actor.submitContactMessage(data.name, data.email, data.message);
+    },
+  });
+}
+
+// ============================================================================
+// Task Management Hooks
+// ============================================================================
+
+export function useGetAllTasks() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Task[]>({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllTasks();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetEmployeeTasks(employeeId: number) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Task[]>({
+    queryKey: ['employeeTasks', employeeId],
+    queryFn: async () => {
+      if (!actor || employeeId === 0) return [];
+      try {
+        return await actor.getEmployeeTasks(BigInt(employeeId));
+      } catch (error) {
+        console.error('Error fetching employee tasks:', error);
+        return [];
+      }
+    },
+    enabled: !!actor && !isFetching && employeeId > 0,
+  });
+}
+
+export function useCreateTask() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      title: string;
+      description: string;
+      dueDate: bigint;
+      priority: TaskPriority;
+      assignedTo: bigint[];
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.createTask(
+        data.title,
+        data.description,
+        data.dueDate,
+        data.priority,
+        data.assignedTo
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { taskId: bigint; update: TaskUpdate }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateTask(data.taskId, data.update);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
+    },
+  });
+}
+
+export function useDeleteTask() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (taskId: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.deleteTask(taskId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
+    },
+  });
+}
+
+// ============================================================================
+// Payslip Management Hooks
+// ============================================================================
+
+export function useGetEmployeePayslips(employeeId: number) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Payslip[]>({
+    queryKey: ['employeePayslips', employeeId],
+    queryFn: async () => {
+      if (!actor || employeeId === 0) return [];
+      try {
+        return await actor.getEmployeePayslips(BigInt(employeeId));
+      } catch (error) {
+        console.error('Error fetching employee payslips:', error);
+        return [];
+      }
+    },
+    enabled: !!actor && !isFetching && employeeId > 0,
+  });
+}
+
+export function useGenerateMonthlyPayslips() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { month: bigint; year: bigint }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.generateMonthlyPayslips(data.month, data.year);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employeePayslips'] });
     },
   });
 }

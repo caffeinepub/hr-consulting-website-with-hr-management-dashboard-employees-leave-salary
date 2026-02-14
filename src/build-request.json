@@ -1,55 +1,111 @@
 {
   "kind": "build_request",
-  "title": "Make the site logo act as a Home button (always navigate to the main homepage)",
+  "title": "Add Employee Dashboard with tasks, salary, and downloadable payslips linked from HR Employees list",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-61",
-      "text": "Update the public site logo area in `frontend/src/components/PublicLayout.tsx` so that clicking the logo navigates the user directly to the main homepage route (`/`) from any current route.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3",
-          "msg-5"
-        ],
-        "quotes": [
-          "make if anyone click on logo user directly go to home page",
-          "yes. build"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When the user clicks the header logo on any route (e.g., `/services`, `/contact`, `/hr/employees`), the app navigates to `/` using client-side navigation (no full page reload).",
-        "The logo click target is keyboard-accessible (focusable) and has appropriate accessible labeling (e.g., link/button semantics and/or aria-label).",
-        "Existing navigation behaviors remain unchanged (smooth-scroll section links, HR Dashboard button routing, mobile menu open/close behavior)."
-      ]
-    },
-    {
-      "id": "REQ-62",
-      "text": "Make the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` also navigate to the main homepage route (`/`) when clicked, matching the header logo behavior.",
+      "id": "REQ-1",
+      "text": "Add an Employee Dashboard entry in the left sidebar navigation (Sheet menu) directly below the existing HR Dashboard section, and implement routing so authenticated employee users can open the Employee Dashboard without using HR-only routes.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-3"
         ],
         "quotes": [
-          "make if anyone click on logo user directly go to home page"
+          "add employee dashboard in side bar below the hr dashboard"
         ]
       },
       "acceptanceCriteria": [
-        "When the user clicks the footer logo/brand area on any route, the app navigates to `/` using client-side navigation (no full page reload).",
-        "The footer logo/brand click target is keyboard-accessible (focusable) and has appropriate accessible labeling (e.g., link/button semantics and/or aria-label)."
+        "In the sidebar menu, a new nav item labeled \"Employee Dashboard\" appears below the existing HR Dashboard items.",
+        "Clicking \"Employee Dashboard\" navigates to an employee-facing dashboard route (not under /hr) and renders successfully for authenticated users.",
+        "Unauthenticated users are blocked from the Employee Dashboard route and see the existing unauthenticated access denied screen."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create an Employee Dashboard page that shows: (1) the employee’s daily tasks, (2) the employee’s salary details, and (3) a payslips section where the employee can download automatically generated payslips.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "there daily task, there salary details, payslips which they can download."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Employee Dashboard displays a Tasks section listing tasks assigned to the logged-in employee (with status and due date).",
+        "Employee Dashboard displays a Salary section showing the logged-in employee’s salary breakdown using existing salary fields (base, PF deduction, bonus, final payable).",
+        "Employee Dashboard displays a Payslips section listing available payslips for the logged-in employee with a download action per payslip.",
+        "All data shown on the Employee Dashboard is restricted to the logged-in employee only (employees cannot view other employees’ data)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement backend support to associate an authenticated Principal with an EmployeeId, and enforce role-based access so HR/admin users can view any employee’s tasks/salary/payslips while employees can only view their own tasks/salary/payslips.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "3.yes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores a Principal -> EmployeeId association and provides admin-only methods to set/update that association.",
+        "Backend provides employee-safe query methods to fetch the caller’s associated Employee record, tasks, and payslips without requiring the UI to supply another employeeId.",
+        "Backend methods that return per-employee tasks/salary/payslips enforce: admin can access any employee; non-admin can access only the employeeId linked to caller Principal; otherwise the call traps/denies.",
+        "Existing admin HR task-management APIs continue to work as-is for admins."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add HR-side deep links/actions from the HR Employees list so each employee row has buttons/links to view that specific employee’s Tasks, Salary details, and Payslips.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "link task, salary, and paylips from hr dashboard information"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each employee row in the HR Employees table includes actions for \"Tasks\", \"Salary\", and \"Payslips\" (labels may be icons with accessible text).",
+        "Clicking \"Tasks\" navigates to an HR view showing tasks for that employee only; clicking \"Salary\" navigates to an HR view showing salary details for that employee; clicking \"Payslips\" navigates to an HR view listing/generating payslips for that employee.",
+        "These per-employee views are restricted to admin/HR users; non-admin users cannot access them even by URL."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Implement automatic payslip generation and downloading: payslips must be generated automatically from stored salary data (no manual uploads) and employees must be able to download generated payslips.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "automatically"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes a payslip data model and query methods to list/get payslips for an employee (admin can list any employee; employee can list their own).",
+        "If a requested payslip does not exist for a given period, the system can generate it automatically using the employee’s current stored salary fields and persist it (or deterministically generate it) so it becomes downloadable.",
+        "Frontend download action produces a file download for the payslip (e.g., a PDF via browser print-to-PDF flow or a generated file blob) without requiring any HR upload step.",
+        "Employees can only download their own payslips; HR/admin can download any employee’s payslips."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files listed as immutable in SYSTEM_CONTEXT (e.g., `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, `frontend/src/components/ui/*`).",
-    "Keep all user-facing text in English.",
-    "Do not change existing navigation item labels or their smooth-scroll behavior."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo changes if state schema changes require a conditional migration.",
+    "Do not edit any files under frontend/src/components/ui or any other immutable frontend paths listed in SYSTEM_CONTEXT.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Do not change the existing section anchor IDs or smooth-scroll implementation.",
-    "Do not add new pages, routes, or backend methods for this change.",
-    "Do not change the logo image asset or generate new images."
+    "Implement third-party authentication providers (only Internet Identity is allowed).",
+    "Add real-time updates (no WebSockets).",
+    "Integrate external databases or external storage for payslip files."
   ],
   "imageRequirements": {
     "required": [],

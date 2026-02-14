@@ -1,480 +1,43 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 39,
-  "summary": "Build a modern, professional HR consulting company website with a core HR Management dashboard for employee, leave, and salary management, recruitment features integrated with LinkedIn, and an authenticated (Internet Identity) access model where all logged-in users have full access to HR dashboard features (no admin-only restrictions or role-based access control).",
+  "projectStateVersion": 3,
+  "summary": "HR and Employee dashboard system: add an employee dashboard accessible from the sidebar under the HR dashboard, showing each employee’s daily tasks, salary details, and downloadable payslips. HR dashboard should link per-employee to tasks/salary/payslips, with automatic payslip generation and role-based access (HR sees all employees; employees see only their own data).",
   "architectural_notes": [
-    "Support an authenticated HR-only dashboard/panel distinct from public marketing pages.",
-    "Store employee, leave, and payroll data in structured form to enable automatic calculations and easy updates.",
-    "Implement automatic leave and payroll calculations (leaves affect salary; PF and bonus included).",
-    "Integrate recruitment flow with LinkedIn (job posts and candidate redirection).",
-    "Set global background color to #131E3A across all pages (public site + HR dashboard).",
-    "Remove decorative/hero background images across the site; retain essential brand imagery such as the logo.",
-    "Office address text should be updated everywhere it appears (e.g., Contact page + footer) to: Nagpur, Maharashtra, India.",
-    "All header and footer navigation links should smoothly scroll to their corresponding on-page sections (single-page anchor navigation).",
-    "Enhance the entire Contact section (details + form) with professional, dynamic animations while keeping a corporate look and feel.",
-    "Apply fade-style text animations to navigation labels across both desktop and mobile navigation, as part of a full navigation visual redesign."
+    "Role-based data access: HR has global access; employee accounts restricted to self data.",
+    "Payslips should be generated automatically (document generation pipeline) and stored for download."
   ],
-  "known_issues": [
-    "Footer is not working properly (user requested full footer fix: layout/links/visibility/spacing/responsiveness).",
-    "Deployment/build is failing (deployment snag encountered during deployment).",
-    "Potential scope/design conflict: prior requirement to remove decorative/hero background images site-wide vs new request to add animated hero background elements (ensure background elements comply, e.g., CSS-only/abstract).",
-    "Global background color #131E3A is not displaying correctly site-wide; needs re-application/verification across all pages/layouts."
-  ],
+  "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-public-facing-hr-consulting-company-website-with-top-level-navigation-and-sections-pages-home-about-us-services-recruitment-and-contact",
-      "title": "Create a public-facing HR consulting company website with top-level navigation and sections/pages: Home, About Us, Services, Recruitment, and Contact.",
+      "id": "feature-add-an-employee-dashboard-entry-in-the-left-sidebar-navigation-sheet-menu-directly-below-the-existing-hr-dashboard-section-and-implement-routing-so-authenticated-employee-users-can-open-the-employee-dashboard-without-using-hr-only-routes",
+      "title": "Add an Employee Dashboard entry in the left sidebar navigation (Sheet menu) directly below the existing HR Dashboard section, and implement routing so authenticated employee users can open the Employee Dashboard without using HR-only routes.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-the-about-us-page-section-content-including-a-leadership-area-that-prominently-highlights-hr-director-vishwesh-shivankar",
-      "title": "Implement the About Us page/section content including a Leadership area that prominently highlights: “HR Director – Vishwesh Shivankar”.",
+      "id": "feature-create-an-employee-dashboard-page-that-shows-1-the-employee-s-daily-tasks-2-the-employee-s-salary-details-and-3-a-payslips-section-where-the-employee-can-download-automatically-generated-payslips",
+      "title": "Create an Employee Dashboard page that shows: (1) the employee’s daily tasks, (2) the employee’s salary details, and (3) a payslips section where the employee can download automatically generated payslips.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-the-services-page-section-with-service-cards-sections-for-hr-consulting-payroll-management-compliance-legal-services-and-recruitment-services",
-      "title": "Implement the Services page/section with service cards/sections for: HR Consulting, Payroll Management, Compliance & Legal Services, and Recruitment Services.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-recruitment-page-section-that-allows-hr-to-create-job-role-entries-title-location-description-and-an-external-linkedin-url-and-provides-a-cta-that-redirects-candidates-to-the-specified-linkedin-url",
-      "title": "Implement a Recruitment page/section that allows HR to create job role entries (title, location, description, and an external LinkedIn URL) and provides a CTA that redirects candidates to the specified LinkedIn URL.",
+      "id": "feature-add-hr-side-deep-links-actions-from-the-hr-employees-list-so-each-employee-row-has-buttons-links-to-view-that-specific-employee-s-tasks-salary-details-and-payslips",
+      "title": "Add HR-side deep links/actions from the HR Employees list so each employee row has buttons/links to view that specific employee’s Tasks, Salary details, and Payslips.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-contact-page-section-with-a-contact-form-name-email-message-and-a-dedicated-area-to-show-company-contact-details-email-phone-office-address-store-submitted-contact-messages-in-the-backend-for-later-viewing-from-the-hr-dashboard",
-      "title": "Implement a Contact page/section with a contact form (name, email, message) and a dedicated area to show company contact details (email, phone, office address). Store submitted contact messages in the backend for later viewing from the HR Dashboard.",
+      "id": "feature-implement-automatic-payslip-generation-and-downloading-payslips-must-be-generated-automatically-from-stored-salary-data-no-manual-uploads-and-employees-must-be-able-to-download-generated-payslips",
+      "title": "Implement automatic payslip generation and downloading: payslips must be generated automatically from stored salary data (no manual uploads) and employees must be able to download generated payslips.",
       "reqIds": [
         "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-dedicated-hr-dashboard-hr-panel-section-that-is-only-accessible-to-authenticated-users-via-internet-identity",
-      "title": "Add a dedicated HR Dashboard / HR Panel section that is only accessible to authenticated users via Internet Identity.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-employee-management-in-the-hr-dashboard-with-create-edit-functionality-for-employee-name-joining-date-salary-inr-pf-details-bonus-and-leave-balance",
-      "title": "Implement employee management in the HR Dashboard with create/edit functionality for: employee name, joining date, salary (₹ INR), PF details, bonus, and leave balance.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-per-employee-leave-management-that-supports-adding-editing-leave-entries-automatically-counts-total-leaves-taken-shows-remaining-leave-balance-and-uses-leave-data-in-salary-calculations",
-      "title": "Implement per-employee leave management that supports adding/editing leave entries, automatically counts total leaves taken, shows remaining leave balance, and uses leave data in salary calculations.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-salary-calculation-for-each-employee-in-inr-including-base-salary-deduction-based-on-leaves-pf-deduction-bonus-addition-and-a-clearly-displayed-final-payable-salary",
-      "title": "Implement salary calculation for each employee in ₹ INR, including: base salary, deduction based on leaves, PF deduction, bonus addition, and a clearly displayed final payable salary.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-application-is-fully-responsive-accessible-keyboard-navigation-readable-typography-good-contrast-and-uses-clean-dashboards-with-cards-and-tables-for-hr-workflows",
-      "title": "Ensure the application is fully responsive, accessible (keyboard navigation, readable typography, good contrast), and uses clean dashboards with cards and tables for HR workflows.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-coherent-visual-theme-across-the-entire-app-with-a-distinct-professional-hr-corporate-style-choose-a-non-blue-non-purple-palette-consistent-typography-spacing-and-component-styling",
-      "title": "Apply a coherent visual theme across the entire app with a distinct professional HR/corporate style (choose a non-blue/non-purple palette), consistent typography, spacing, and component styling.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-generated-static-brand-images-to-the-frontend-and-use-them-on-the-public-site-e-g-header-logo-and-home-hero-visual-by-placing-them-under-frontend-public-assets-generated-and-referencing-them-directly-from-the-ui",
-      "title": "Add generated static brand images to the frontend and use them on the public site (e.g., header logo and home hero visual) by placing them under frontend/public/assets/generated and referencing them directly from the UI.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-the-hex-background-color-131e3a-as-the-global-site-background-across-the-entire-application-all-public-pages-and-all-hr-dashboard-pages-ensuring-the-default-background-behind-all-layouts-is-131e3a",
-      "title": "Apply the hex background color #131E3A as the global site background across the entire application (all public pages and all HR Dashboard pages), ensuring the default background behind all layouts is #131E3A.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-only-decorative-background-hero-images-site-wide-keep-functional-brand-images-such-as-the-logo-specifically-remove-the-home-page-hero-background-image-overlay-so-the-hero-section-uses-the-solid-background-instead",
-      "title": "Remove only decorative background/hero images site-wide (keep functional/brand images such as the logo). Specifically remove the Home page hero background image overlay so the hero section uses the solid background instead.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-public-site-footer-in-frontend-src-components-publiclayout-tsx-so-it-works-properly-across-the-entire-app-including-correct-layout-spacing-visibility-link-behavior-and-responsiveness-on-mobile-tablet-desktop-without-changing-the-footer-s-intended-content-or-adding-new-sections",
-      "title": "Fix the public site footer in `frontend/src/components/PublicLayout.tsx` so it works properly across the entire app, including correct layout, spacing, visibility, link behavior, and responsiveness on mobile/tablet/desktop, without changing the footer’s intended content or adding new sections.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-office-address-everywhere-it-appears-in-the-frontend-to-exactly-nagpur-maharashtra-india-including-at-minimum-the-contact-page-contact-details-and-the-footer-contact-block",
-      "title": "Update the office address everywhere it appears in the frontend to exactly: “Nagpur, Maharashtra, India”, including (at minimum) the Contact page contact details and the footer contact block.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-diagnose-and-fix-the-current-build-deployment-failure-so-the-project-can-successfully-build-and-deploy-to-the-internet-computer-without-errors",
-      "title": "Diagnose and fix the current build/deployment failure so the project can successfully build and deploy to the Internet Computer without errors.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-all-public-site-navigation-links-in-frontend-src-components-publiclayout-tsx-desktop-header-nav-mobile-menu-nav-and-footer-quick-links-so-clicking-home-about-us-services-recruitment-contact-performs-smooth-scrolling-to-the-matching-section-on-the-same-page-rather-than-navigating-to-separate-routes",
-      "title": "Update all public-site navigation links in `frontend/src/components/PublicLayout.tsx` (desktop header nav, mobile menu nav, and footer “Quick Links”) so clicking Home / About Us / Services / Recruitment / Contact performs smooth scrolling to the matching section on the same page, rather than navigating to separate routes.",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-public-page-being-displayed-contains-scroll-targets-for-all-navigation-items-by-adding-stable-unique-section-anchors-ids-for-home-about-us-services-recruitment-and-contact-so-smooth-scroll-has-a-concrete-destination-for-each-link",
-      "title": "Ensure the public page being displayed contains scroll targets for all navigation items by adding stable, unique section anchors/IDs for: Home, About Us, Services, Recruitment, and Contact (so smooth-scroll has a concrete destination for each link).",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-if-a-user-clicks-a-navigation-link-while-they-are-on-a-non-public-route-e-g-about-services-recruitment-contact-or-any-other-public-route-navigate-to-the-main-public-page-that-contains-the-anchored-sections-and-then-perform-the-smooth-scroll-to-the-requested-section",
-      "title": "If a user clicks a navigation link while they are on a non-public route (e.g., `/about`, `/services`, `/recruitment`, `/contact`, or any other public route), navigate to the main public page that contains the anchored sections and then perform the smooth scroll to the requested section.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-entire-public-contact-experience-to-look-more-attractive-and-professional-applying-consistent-visual-improvements-to-both-a-the-on-page-contact-section-on-the-main-public-page-homepage-section-with-id-contact-and-b-the-standalone-contact-page-while-keeping-the-existing-fields-content-and-submission-behavior-unchanged",
-      "title": "Redesign the entire public Contact experience to look more attractive and professional, applying consistent visual improvements to both (a) the on-page Contact section on the main public page (HomePage section with id=\"contact\") and (b) the standalone Contact page, while keeping the existing fields, content, and submission behavior unchanged.",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-professional-dynamic-animations-to-the-entire-contact-section-form-contact-info-including-1-an-entrance-animation-when-the-section-cards-become-visible-and-2-subtle-hover-focus-micro-interactions-on-interactive-elements-while-respecting-accessibility-best-practices-including-reduced-motion-preferences",
-      "title": "Add professional, dynamic animations to the entire Contact section (form + contact info) including (1) an entrance animation when the section/cards become visible and (2) subtle hover/focus micro-interactions on interactive elements, while respecting accessibility best practices (including reduced-motion preferences).",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-public-site-header-navigation-in-frontend-src-components-publiclayout-tsx-to-look-more-attractive-and-work-more-efficiently-including-updated-layout-spacing-visual-hierarchy-for-home-about-us-services-recruitment-contact-hr-dashboard-and-login-logout-via-the-existing-loginbutton-keep-existing-navigation-behaviors-unchanged-smooth-scroll-to-anchored-sections-for-public-links-hr-dashboard-navigates-to-hr-employees-mobile-menu-still-opens-closes-correctly",
-      "title": "Redesign the public-site header navigation in `frontend/src/components/PublicLayout.tsx` to look more attractive and work more efficiently, including updated layout/spacing/visual hierarchy for: Home, About Us, Services, Recruitment, Contact, HR Dashboard, and Login/Logout (via the existing `LoginButton`). Keep existing navigation behaviors unchanged (smooth-scroll to anchored sections for public links; HR Dashboard navigates to `/hr/employees`; mobile menu still opens/closes correctly).",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-fade-style-text-animations-to-the-navigation-labels-words-for-all-public-navigation-items-home-about-us-services-recruitment-contact-hr-dashboard-and-login-logout-in-both-the-desktop-header-nav-and-the-mobile-menu-in-frontend-src-components-publiclayout-tsx-animations-must-respect-accessibility-best-practices-including-disabling-reducing-motion-when-the-user-has-prefers-reduced-motion-enabled",
-      "title": "Add fade-style text animations to the navigation labels/words for all public navigation items (Home, About Us, Services, Recruitment, Contact, HR Dashboard, and Login/Logout) in both the desktop header nav and the mobile menu in `frontend/src/components/PublicLayout.tsx`. Animations must respect accessibility best practices, including disabling/reducing motion when the user has `prefers-reduced-motion` enabled.",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-slide-in-animations-to-the-entire-home-page-hero-section-content-in-frontend-src-pages-homepage-tsx-including-the-headline-transform-your-workforce-management-subheadline-and-both-cta-buttons-get-started-our-services-so-the-hero-feels-more-attractive-while-keeping-the-existing-hero-text-and-click-scroll-behavior-unchanged",
-      "title": "Add slide-in animations to the entire Home page hero section content in `frontend/src/pages/HomePage.tsx`, including the headline (“Transform Your Workforce Management”), subheadline, and both CTA buttons (“Get Started”, “Our Services”), so the hero feels more attractive while keeping the existing hero text and click/scroll behavior unchanged.",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-subtle-animated-hero-background-elements-to-the-home-hero-section-home-using-css-dom-elements-no-decorative-background-images-ensuring-the-background-animation-stays-behind-the-content-does-not-reduce-text-readability-contrast-and-remains-consistent-with-the-site-s-existing-dark-background-131e3a",
-      "title": "Add subtle animated hero background elements to the Home hero section (`#home`) using CSS/DOM elements (no decorative background images), ensuring the background animation stays behind the content, does not reduce text readability/contrast, and remains consistent with the site’s existing dark background (#131E3A).",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-all-new-hero-animations-content-slide-in-and-background-motion-respect-accessibility-best-practices-including-honoring-prefers-reduced-motion-by-disabling-or-significantly-reducing-motion-when-the-user-has-reduced-motion-enabled",
-      "title": "Ensure all new hero animations (content slide-in and background motion) respect accessibility best practices, including honoring `prefers-reduced-motion` by disabling or significantly reducing motion when the user has reduced-motion enabled.",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-retry-the-full-build-and-deployment-to-the-internet-computer-for-the-existing-project-and-capture-the-complete-build-deploy-logs-frontend-build-canister-build-and-deploy-steps-to-identify-the-exact-failure-point",
-      "title": "Retry the full build and deployment to the Internet Computer for the existing project, and capture the complete build/deploy logs (frontend build, canister build, and deploy steps) to identify the exact failure point.",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-if-the-build-or-deployment-fails-again-diagnose-and-implement-the-minimal-code-configuration-changes-needed-so-the-project-successfully-builds-and-deploys-to-the-internet-computer-without-errors",
-      "title": "If the build or deployment fails again, diagnose and implement the minimal code/configuration changes needed so the project successfully builds and deploys to the Internet Computer without errors.",
-      "reqIds": [
-        "REQ-30"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-animate-only-the-home-page-hero-headline-text-transform-your-workforce-management-in-frontend-src-pages-homepage-tsx-so-the-words-letters-have-an-attractive-text-only-animation-while-keeping-the-headline-wording-exactly-the-same",
-      "title": "Animate only the Home page hero headline text \"Transform Your Workforce Management\" in `frontend/src/pages/HomePage.tsx` so the words/letters have an attractive text-only animation, while keeping the headline wording exactly the same.",
-      "reqIds": [
-        "REQ-31"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-all-other-home-hero-animations-and-background-motion-effects-remain-reverted-disabled-so-that-the-subheadline-and-cta-buttons-get-started-our-services-are-not-animated-and-no-animated-hero-background-elements-are-introduced",
-      "title": "Ensure all other Home hero animations and background motion effects remain reverted/disabled so that the subheadline and CTA buttons (\"Get Started\", \"Our Services\") are not animated and no animated hero background elements are introduced.",
-      "reqIds": [
-        "REQ-32"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-make-the-hero-headline-text-animation-respect-accessibility-best-practices-by-honoring-prefers-reduced-motion-disable-or-significantly-reduce-motion-when-reduced-motion-is-enabled",
-      "title": "Make the hero headline text animation respect accessibility best practices by honoring `prefers-reduced-motion` (disable or significantly reduce motion when reduced motion is enabled).",
-      "reqIds": [
-        "REQ-33"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-public-site-mobile-burger-menu-trigger-in-frontend-src-components-publiclayout-tsx-so-the-icon-is-more-visually-styled-and-morphs-into-an-x-when-the-mobile-menu-is-open-while-keeping-the-existing-open-close-behavior-sheet-state-via-mobilemenuopen-unchanged",
-      "title": "Update the public-site mobile burger menu trigger in `frontend/src/components/PublicLayout.tsx` so the icon is more visually styled and morphs into an “X” when the mobile menu is open, while keeping the existing open/close behavior (Sheet state via `mobileMenuOpen`) unchanged.",
-      "reqIds": [
-        "REQ-34"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-opened-mobile-menu-panel-sheetcontent-in-frontend-src-components-publiclayout-tsx-with-a-fresh-visual-style-distinct-from-the-current-dark-corporate-look-without-changing-the-existing-navigation-items-labels-or-click-behaviors-smooth-scroll-on-home-navigate-to-home-then-scroll-from-other-routes-close-menu-on-click",
-      "title": "Redesign the opened mobile menu panel (SheetContent) in `frontend/src/components/PublicLayout.tsx` with a fresh visual style distinct from the current dark corporate look, without changing the existing navigation items, labels, or click behaviors (smooth-scroll on home; navigate-to-home-then-scroll from other routes; close menu on click).",
-      "reqIds": [
-        "REQ-35"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-all-new-burger-icon-panel-animations-or-transitions-introduced-for-the-mobile-menu-respect-accessibility-best-practices-including-honoring-prefers-reduced-motion-and-do-not-introduce-flashing-overly-fast-motion-or-focus-traps-beyond-the-existing-sheet-behavior",
-      "title": "Ensure all new burger icon/panel animations or transitions introduced for the mobile menu respect accessibility best practices, including honoring `prefers-reduced-motion`, and do not introduce flashing, overly fast motion, or focus traps beyond the existing Sheet behavior.",
-      "reqIds": [
-        "REQ-36"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-full-role-based-access-control-system-for-the-hr-dashboard-so-that-admins-have-permission-to-perform-all-hr-actions-employees-leaves-salaries-job-roles-and-contact-messages-and-non-admin-authenticated-users-are-blocked-from-hr-data-actions-unless-an-admin-grants-them-access",
-      "title": "Implement a full role-based access control system for the HR Dashboard so that admins have permission to perform all HR actions (employees, leaves, salaries, job roles, and contact messages), and non-admin authenticated users are blocked from HR data/actions unless an admin grants them access.",
-      "reqIds": [
-        "REQ-37"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-secure-admin-bootstrap-flow-so-the-currently-logged-in-internet-identity-principal-can-be-promoted-to-admin-using-the-existing-secret-token-mechanism-the-caffeineadmintoken-url-parameter-used-by-the-frontend-actor-initialization-and-ensure-this-bootstrap-does-not-allow-unauthorized-users-to-become-admin-without-the-secret",
-      "title": "Add a secure admin bootstrap flow so the currently logged-in Internet Identity principal can be promoted to admin using the existing secret-token mechanism (the `caffeineAdminToken` URL parameter used by the frontend actor initialization), and ensure this bootstrap does not allow unauthorized users to become admin without the secret.",
-      "reqIds": [
-        "REQ-38"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-an-admin-access-management-area-in-the-hr-dashboard-where-admins-can-view-users-and-manage-their-access-promote-demote-users-to-from-admin-and-assign-remove-any-other-supported-roles-with-immediate-effect-on-what-those-users-can-access",
-      "title": "Create an Admin/Access Management area in the HR Dashboard where admins can view users and manage their access: promote/demote users to/from admin and assign/remove any other supported roles, with immediate effect on what those users can access.",
-      "reqIds": [
-        "REQ-39"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-frontend-route-protection-so-hr-routes-require-authentication-and-the-appropriate-role-show-a-clear-english-access-denied-message-when-the-user-is-logged-in-but-lacks-permissions-distinct-from-the-not-logged-in-state",
-      "title": "Update frontend route protection so `/hr/*` routes require authentication and the appropriate role; show a clear English access-denied message when the user is logged in but lacks permissions (distinct from the “not logged in” state).",
-      "reqIds": [
-        "REQ-40"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-public-services-experience-so-each-service-card-is-interactive-a-hover-click-micro-animations-b-expands-collapses-inline-to-reveal-additional-content-and-c-can-open-a-modal-with-the-service-details",
-      "title": "Update the public Services experience so each service card is interactive: (a) hover + click micro-animations, (b) expands/collapses inline to reveal additional content, and (c) can open a modal with the service details.",
-      "reqIds": [
-        "REQ-43"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-dedicated-service-details-pages-as-new-routes-under-services-e-g-services-hr-consulting-and-ensure-users-can-navigate-to-them-from-the-services-cards-from-either-the-card-ui-and-or-the-modal",
-      "title": "Add dedicated service details pages as new routes under /services/* (e.g., /services/hr-consulting) and ensure users can navigate to them from the Services cards (from either the card UI and/or the modal).",
-      "reqIds": [
-        "REQ-44"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-refactor-the-services-data-so-the-same-canonical-service-definitions-title-description-features-icon-slug-are-reused-consistently-across-the-services-overview-inline-expansions-modal-content-and-the-dedicated-service-detail-pages",
-      "title": "Refactor the Services data so the same canonical service definitions (title, description, features, icon, slug) are reused consistently across the Services overview, inline expansions, modal content, and the dedicated service detail pages.",
-      "reqIds": [
-        "REQ-45"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-about-us-section-on-the-main-homepage-the-section-with-id-about-in-frontend-src-pages-homepage-tsx-to-look-more-attractive-and-professional-via-visual-only-changes-layout-spacing-typography-card-styling-while-keeping-all-existing-text-content-and-section-anchor-behavior-unchanged",
-      "title": "Redesign the About Us section on the main homepage (the section with id=\"about\" in `frontend/src/pages/HomePage.tsx`) to look more attractive and professional via visual-only changes (layout, spacing, typography, card styling), while keeping all existing text/content and section anchor behavior unchanged.",
-      "reqIds": [
-        "REQ-46"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-redesign-the-standalone-about-page-frontend-src-pages-aboutpage-tsx-to-match-the-improved-visual-style-of-the-homepage-about-section-consistent-typography-spacing-and-card-treatments-while-keeping-all-existing-content-and-headings-unchanged",
-      "title": "Redesign the standalone About page (`frontend/src/pages/AboutPage.tsx`) to match the improved visual style of the homepage About section (consistent typography, spacing, and card treatments), while keeping all existing content and headings unchanged.",
-      "reqIds": [
-        "REQ-47"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-keep-motion-minimal-for-the-about-us-redesign-and-keep-the-leadership-highlight-for-hr-director-vishwesh-shivankar-exactly-as-is-no-content-changes-to-name-title-description-any-added-motion-must-respect-prefers-reduced-motion",
-      "title": "Keep motion minimal for the About Us redesign and keep the Leadership highlight for “HR Director – Vishwesh Shivankar” exactly as-is (no content changes to name/title/description); any added motion must respect `prefers-reduced-motion`.",
-      "reqIds": [
-        "REQ-48"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-entire-application-renders-with-a-solid-global-background-color-of-exactly-hex-131e3a-public-pages-and-all-hr-dashboard-pages-including-cases-where-components-use-theme-tokens-like-bg-background-bg-muted-or-semi-transparent-backgrounds-e-g-bg-background-80-that-might-otherwise-visually-alter-the-page-s-default-background",
-      "title": "Ensure the entire application renders with a solid global background color of exactly hex #131E3A (public pages and all HR dashboard pages), including cases where components use theme tokens like `bg-background`, `bg-muted`, or semi-transparent backgrounds (e.g., `bg-background/80`) that might otherwise visually alter the page’s default background.",
-      "reqIds": [
-        "REQ-49"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-run-a-full-build-and-deployment-to-the-internet-computer-after-applying-the-background-fix-and-confirm-the-deployed-version-reflects-the-global-131e3a-background-across-public-and-hr-routes",
-      "title": "Run a full build and deployment to the Internet Computer after applying the background fix, and confirm the deployed version reflects the global #131E3A background across public and HR routes.",
-      "reqIds": [
-        "REQ-50"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-home-page-hero-background-image-entirely-from-frontend-src-pages-homepage-tsx-so-the-hero-section-no-longer-renders-any-image-based-background-specifically-stop-using-assets-generated-hr-hero-dim-1600x900-png-and-instead-uses-the-existing-solid-site-background-131e3a",
-      "title": "Remove the Home page Hero background image entirely from `frontend/src/pages/HomePage.tsx` so the hero section no longer renders any image-based background (specifically stop using `/assets/generated/hr-hero.dim_1600x900.png`) and instead uses the existing solid site background (#131E3A).",
-      "reqIds": [
-        "REQ-51"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-hr-dashboard-route-protection-so-that-all-hr-routes-require-internet-identity-authentication-but-do-not-require-admin-status-or-any-role-based-authorization-checks-i-e-any-logged-in-user-can-access-all-hr-dashboard-pages",
-      "title": "Update HR Dashboard route protection so that all `/hr/*` routes require Internet Identity authentication but do NOT require admin status or any role-based authorization checks (i.e., any logged-in user can access all HR dashboard pages).",
-      "reqIds": [
-        "REQ-52"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-admin-bootstrap-flow-that-attempts-to-promote-the-current-principal-to-admin-via-the-caffeineadmintoken-url-parameter-so-that-the-app-no-longer-depends-on-or-surfaces-errors-related-to-admin-bootstrapping",
-      "title": "Remove the admin bootstrap flow that attempts to promote the current principal to admin via the `caffeineAdminToken` URL parameter, so that the app no longer depends on or surfaces errors related to admin bootstrapping.",
-      "reqIds": [
-        "REQ-53"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-hr-dashboard-navigation-ui-so-that-no-sidebar-or-menu-items-are-conditionally-hidden-based-on-admin-status-remove-admin-only-gating-in-the-hr-layout-navigation",
-      "title": "Update the HR Dashboard navigation UI so that no sidebar or menu items are conditionally hidden based on admin status (remove admin-only gating in the HR layout navigation).",
-      "reqIds": [
-        "REQ-54"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-either-remove-the-admin-access-management-feature-from-the-hr-dashboard-ui-route-navigation-entry-or-make-it-non-admin-gated-and-safe-for-general-use-without-granting-special-privileges-in-either-case-the-hr-dashboard-must-not-contain-admin-only-management-ux-that-blocks-non-admin-users",
-      "title": "Either remove the Admin/Access Management feature from the HR Dashboard UI (route + navigation entry), or make it non-admin-gated and safe for general use without granting special privileges; in either case, the HR Dashboard must not contain admin-only management UX that blocks non-admin users.",
-      "reqIds": [
-        "REQ-56"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-new-hr-dashboard-sidebar-navigation-item-labeled-quick-leave-mark-that-routes-to-a-new-page-at-hr-quick-leave-and-ensure-it-appears-in-both-the-desktop-sidebar-and-the-mobile-hr-menu",
-      "title": "Add a new HR Dashboard sidebar navigation item labeled \"Quick Leave Mark\" that routes to a new page at `/hr/quick-leave`, and ensure it appears in both the desktop sidebar and the mobile HR menu.",
-      "reqIds": [
-        "REQ-57"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-quick-leave-mark-page-ui-as-a-separate-workflow-from-the-existing-per-employee-leave-management-provide-a-form-that-lets-hr-authenticated-users-select-an-employee-and-submit-a-leave-record-with-fields-leave-date-leave-type-and-reason",
-      "title": "Implement the Quick Leave Mark page UI as a separate workflow from the existing per-employee leave management: provide a form that lets HR (authenticated users) select an employee and submit a leave record with fields: leave date, leave type, and reason.",
-      "reqIds": [
-        "REQ-58"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-wire-the-quick-leave-mark-ui-to-the-backend-via-react-query-add-a-new-mutation-hook-for-the-new-backend-method-and-ensure-relevant-cached-queries-are-invalidated-so-employee-leave-lists-and-employee-data-reflect-the-newly-marked-leave-without-requiring-a-full-reload",
-      "title": "Wire the Quick Leave Mark UI to the backend via React Query: add a new mutation hook for the new backend method, and ensure relevant cached queries are invalidated so employee leave lists and employee data reflect the newly-marked leave without requiring a full reload.",
-      "reqIds": [
-        "REQ-60"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-public-site-logo-area-in-frontend-src-components-publiclayout-tsx-so-that-clicking-the-logo-navigates-the-user-directly-to-the-main-homepage-route-from-any-current-route",
-      "title": "Update the public site logo area in `frontend/src/components/PublicLayout.tsx` so that clicking the logo navigates the user directly to the main homepage route (`/`) from any current route.",
-      "reqIds": [
-        "REQ-61"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-make-the-footer-logo-brand-area-in-frontend-src-components-publiclayout-tsx-also-navigate-to-the-main-homepage-route-when-clicked-matching-the-header-logo-behavior",
-      "title": "Make the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` also navigate to the main homepage route (`/`) when clicked, matching the header logo behavior.",
-      "reqIds": [
-        "REQ-62"
       ],
       "version": 1
     }
@@ -482,157 +45,38 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Public-facing HR consulting website with sections: Home, About (leadership), Services, Recruitment, Contact",
+      "summary": "Add Employee Dashboard in sidebar below HR Dashboard with sections for daily tasks, salary details, and downloadable payslips",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "HR Director/leadership content: highlight HR Director Vishwesh Shivankar in About/Leadership section",
+      "summary": "Add per-employee links/actions from HR dashboard to view that employee’s tasks, salary details, and payslips",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Services pages/sections for HR Consulting, Payroll Management, Compliance & Legal Services, Recruitment Services",
+      "summary": "Implement automatic payslip generation and allow employees to download generated payslips",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Recruitment section with LinkedIn integration: post job roles and redirect candidates to LinkedIn profiles",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Contact section with contact form and company contact details (email, phone, office address)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Dedicated HR Management dashboard/panel for HR users",
+      "summary": "Enforce role-based access: HR can view all employees’ tasks/salary/payslips; employees can view only their own",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-7",
-      "summary": "Employee management in HR dashboard: add/edit employee details (name, joining date, salary in ₹ INR, PF details, bonus, leave balance)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Leave management per employee: editable leaves, auto-count leaves taken, show remaining balance; leave impacts salary calculation",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Salary calculation in ₹ INR: auto-calculate base, leave-based deductions, PF deduction, bonus addition; display final payable salary",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "UI/UX requirements: modern corporate design, responsive, accessible, HR-friendly dashboards (cards/tables), easy-to-edit fields",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Persist all HR Dashboard data (employees, leave entries, job roles, contact messages) in the Motoko backend so it survives page reloads and canister upgrades (using stable storage patterns as appropriate for new state).",
+      "summary": "Implement backend support to associate an authenticated Principal with an EmployeeId, and enforce role-based access so HR/admin users can view any employee’s tasks/salary/payslips while employees can only view their own tasks/salary/payslips.",
       "reqIds": [
-        "REQ-10"
+        "REQ-3"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-21",
-      "summary": "Apply global site background color #131E3A across the entire website (public pages and HR dashboard)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Remove only decorative background/hero images site-wide while keeping other images (e.g., logo)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Implement smooth-scroll navigation for all header + footer navigation links to scroll to their matching on-page sections (Home, About, Services, Recruitment, Contact)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Redesign entire Contact section to look more attractive with professional, dynamic animations (applies to contact info + form)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Redesign the public navigation (Home, About Us, Services, Recruitment, Contact, HR Dashboard, Login) to look more attractive and efficient, with fade-style animated text; apply consistently on both desktop header nav and mobile menu",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Animate only the Home hero headline text “Transform Your Workforce Management” (word/text animation) while keeping other hero animations/background effects reverted/disabled",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Redesign the mobile burger menu icon to be more visually attractive and morph into an X when opened; also refresh the opened mobile menu panel with a different/fresh look (beyond current dark corporate styling)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-36",
-      "summary": "Make Services section cards interactive: each service card supports hover/click micro-animations, expands inline, can open a modal, and provides a dedicated details route/page (e.g., /services/hr-consulting).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-37",
-      "summary": "Make the About Us section more attractive via a visual-only redesign; keep motion minimal and keep the Leadership highlight (“HR Director – Vishwesh Shivankar”) exactly as-is",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-41",
-      "summary": "Update backend authorization checks for all HR Dashboard data actions (job role creation, employee CRUD actions currently implemented, leave entry actions currently implemented, and viewing contact messages) so they are permitted for any authenticated user (\"user\" level) rather than being restricted to admins.",
-      "reqIds": [
-        "REQ-55"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-42",
-      "summary": "Add a new HR Dashboard sidebar tab for a separate “Quick Leave Mark” UI that quickly records a leave linked to an employee ID, with fields: leave date, type, reason.",
-      "reqIds": [],
-      "status": "in_progress"
-    },
-    {
-      "id": "AR-45",
-      "summary": "Extend the backend leave-entry data model to store a leave type, and add a dedicated backend method for the Quick Leave Mark workflow that creates a leave entry linked to the selected employee ID using a single leave date plus the provided type and reason.",
-      "reqIds": [
-        "REQ-59"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-46",
-      "summary": "Make the site header logo clickable so that clicking the logo always navigates directly to the main Home page.",
-      "reqIds": [],
-      "status": "in_progress"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "HR Consulting Website with HR Management Dashboard (Employees, Leave, Salary)",
+  "projectName": "Add Employee Dashboard with tasks, salary, and downloadable payslips linked from HR Employees list",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

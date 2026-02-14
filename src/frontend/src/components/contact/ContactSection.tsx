@@ -34,7 +34,7 @@ export default function ContactSection({
     {
       icon: MapPin,
       label: 'Office',
-      value: 'Mumbai, India',
+      value: 'Nagpur, Maharashtra, India',
       href: null,
     },
   ];

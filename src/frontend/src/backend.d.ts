@@ -24,12 +24,21 @@ export interface QuickLeaveMarkRequest {
     leaveType: string;
     reason: string;
 }
+export interface Task {
+    id: TaskId;
+    title: string;
+    assignedTo: Array<EmployeeId>;
+    createdAt: bigint;
+    dueDate: bigint;
+    description: string;
+    priority: TaskPriority;
+    isComplete: boolean;
+}
 export interface UserInfo {
     principal: Principal;
     role: UserRole;
     profile?: UserProfile;
 }
-export type JobRoleId = bigint;
 export interface LeaveEntry {
     id: LeaveId;
     status: string;
@@ -41,6 +50,15 @@ export interface LeaveEntry {
     startDate: bigint;
     reason: string;
 }
+export interface TaskUpdate {
+    title: string;
+    assignedTo: Array<EmployeeId>;
+    dueDate: bigint;
+    description: string;
+    priority: TaskPriority;
+    isComplete: boolean;
+}
+export type JobRoleId = bigint;
 export interface JobRole {
     id: JobRoleId;
     title: string;
@@ -58,7 +76,14 @@ export interface ContactMessage {
     message: string;
     timestamp: bigint;
 }
+export interface OfficeAddress {
+    title: string;
+    email: string;
+    addressLines: Array<string>;
+    phone: string;
+}
 export type EmployeeId = bigint;
+export type TaskId = bigint;
 export interface Employee {
     id: EmployeeId;
     salary: Salary;
@@ -71,10 +96,25 @@ export interface Employee {
     totalLeavesTaken: bigint;
     bonus: bigint;
 }
+export type PayslipId = bigint;
 export type LeaveId = bigint;
 export interface UserProfile {
     name: string;
     email: string;
+}
+export interface Payslip {
+    id: PayslipId;
+    month: bigint;
+    leaveBalance: bigint;
+    createdAt: bigint;
+    year: bigint;
+    employeeId: EmployeeId;
+    salaryDetails: Salary;
+}
+export enum TaskPriority {
+    low = "low",
+    high = "high",
+    medium = "medium"
 }
 export enum UserRole {
     admin = "admin",
@@ -85,11 +125,17 @@ export interface backendInterface {
     addLeaveEntry(employeeId: EmployeeId, startDate: bigint, endDate: bigint, reason: string): Promise<LeaveId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignUserRole(user: Principal, role: UserRole): Promise<void>;
+    associateEmployeeWithPrincipal(employeeId: EmployeeId): Promise<void>;
     createEmployee(name: string, joiningDate: bigint, baseSalary: bigint, pfDetails: string, bonus: bigint): Promise<EmployeeId>;
     createJobRole(jobRoleEntry: JobRole): Promise<JobRoleId>;
+    createTask(title: string, description: string, dueDate: bigint, priority: TaskPriority, assignedTo: Array<EmployeeId>): Promise<TaskId>;
+    deleteTask(taskId: TaskId): Promise<void>;
+    generateMonthlyPayslips(month: bigint, year: bigint): Promise<void>;
     getAllContactMessages(): Promise<Array<ContactMessage>>;
     getAllEmployeesSorted(): Promise<Array<Employee>>;
     getAllOpenJobRoles(): Promise<Array<JobRole>>;
+    getAllTasks(): Promise<Array<Task>>;
+    getAssociatedEmployeeId(principal: Principal): Promise<EmployeeId | null>;
     getCallerRole(): Promise<UserRole>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -97,9 +143,15 @@ export interface backendInterface {
     getEmployee(employeeId: EmployeeId): Promise<Employee | null>;
     getEmployeeLeaveBalance(employeeId: EmployeeId): Promise<bigint>;
     getEmployeeLeaveEntries(employeeId: EmployeeId): Promise<Array<LeaveEntry>>;
+    getEmployeePayslips(employeeId: EmployeeId): Promise<Array<Payslip>>;
+    getEmployeeTasks(employeeId: EmployeeId): Promise<Array<Task>>;
+    getOfficeAddress(): Promise<OfficeAddress>;
     getOpenJobRolesCount(): Promise<bigint>;
+    getPayslip(payslipId: PayslipId): Promise<Payslip | null>;
+    getTask(taskId: TaskId): Promise<Task | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getUserRole(user: Principal): Promise<UserRole>;
+    hasPendingTasks(employeeId: EmployeeId): Promise<boolean>;
     hasPermission(user: Principal, requiredRole: UserRole): Promise<boolean>;
     isAdmin(user: Principal): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
@@ -108,4 +160,5 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     submitContactMessage(name: string, email: string, message: string): Promise<ContactMessageId>;
     updateEmployeeSalary(employeeId: EmployeeId, newBaseSalary: bigint): Promise<void>;
+    updateTask(taskId: TaskId, update: TaskUpdate): Promise<void>;
 }

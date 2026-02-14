@@ -36,6 +36,11 @@ export default function ServiceCard({ service, onQuickView }: ServiceCardProps) 
     navigate({ to: `/services/${service.slug}` });
   };
 
+  const handleComplianceFirst = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/compliance-first' });
+  };
+
   return (
     <Card
       className="h-full cursor-pointer transition-all duration-300 motion-safe:hover:shadow-lg motion-safe:hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -81,7 +86,7 @@ export default function ServiceCard({ service, onQuickView }: ServiceCardProps) 
           </div>
         </div>
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-4 flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -94,10 +99,19 @@ export default function ServiceCard({ service, onQuickView }: ServiceCardProps) 
           <Button
             size="sm"
             onClick={handleLearnMore}
-            className="flex items-center gap-2"
           >
             Learn More
           </Button>
+          {service.slug === 'compliance-legal' && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleComplianceFirst}
+              className="flex items-center gap-2"
+            >
+              Compliance First
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

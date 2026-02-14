@@ -81,17 +81,20 @@
     html {
         background-color: #131E3A !important;
         scroll-behavior: smooth;
+        overflow-x: hidden;
     }
     
     body {
         @apply text-foreground;
         font-feature-settings: "rlig" 1, "calt" 1;
         background-color: #131E3A !important;
+        overflow-x: hidden;
     }
 
     #root {
         background-color: #131E3A !important;
         min-height: 100vh;
+        overflow-x: hidden;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -138,6 +141,29 @@
         100% {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    /* Hover-triggered slide-in animation for HR Solutions */
+    .hover-slide-trigger {
+        opacity: 1;
+        transform: translateX(0);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hover-slide-trigger:hover,
+    .hover-slide-trigger:focus-visible {
+        animation: hover-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes hover-slide-in {
+        0% {
+            transform: translateX(-10px);
+            opacity: 0.7;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
         }
     }
 
@@ -189,31 +215,47 @@
     /* Reduced motion support for all animations */
     @media (prefers-reduced-motion: reduce) {
         .motion-safe\:animate-fade-in,
-        .motion-safe\:hover\:opacity-80,
-        .motion-safe\:focus-visible\:opacity-80,
-        .motion-safe\:transition-opacity,
-        .motion-safe\:transition-transform,
-        .motion-safe\:transition-all,
-        .motion-safe\:group-hover\:w-3\/4,
-        .motion-safe\:hover\:border-primary\/50,
-        .motion-safe\:hover\:shadow-lg,
-        .motion-safe\:duration-300 {
+        .motion-safe\:animate-fade-in-up,
+        .motion-safe\:animate-fade-in-down,
+        .motion-safe\:animate-fade-in-left,
+        .motion-safe\:animate-fade-in-right,
+        .motion-safe\:animate-scale-in,
+        .motion-safe\:animate-slide-in-right {
             animation: none !important;
-            transition: none !important;
-        }
-
-        .hero-word-animate {
             opacity: 1 !important;
-            animation: none !important;
             transform: none !important;
         }
 
-        .mobile-menu-item::before {
+        .hero-word-animate {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        .hover-slide-trigger {
+            animation: none !important;
             transition: none !important;
         }
 
-        html {
-            scroll-behavior: auto;
+        .hover-slide-trigger:hover,
+        .hover-slide-trigger:focus-visible {
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+
+        .motion-safe\:transition-all,
+        .motion-safe\:transition-colors,
+        .motion-safe\:transition-transform,
+        .motion-safe\:transition-opacity {
+            transition: none !important;
+        }
+
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
         }
     }
 }

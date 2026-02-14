@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-public-site-logo-area-in-frontend-src-components-publiclayout-tsx-so-that-clicking-the-logo-navigates-the-user-directly-to-the-main-homepage-route-from-any-current-route",
-      "featureTitle": "Update the public site logo area in `frontend/src/components/PublicLayout.tsx` so that clicking the logo navigates the user directly to the main homepage route (`/`) from any current route.",
+      "featureId": "feature-add-an-employee-dashboard-entry-in-the-left-sidebar-navigation-sheet-menu-directly-below-the-existing-hr-dashboard-section-and-implement-routing-so-authenticated-employee-users-can-open-the-employee-dashboard-without-using-hr-only-routes",
+      "featureTitle": "Add an Employee Dashboard entry in the left sidebar navigation (Sheet menu) directly below the existing HR Dashboard section, and implement routing so authenticated employee users can open the Employee Dashboard without using HR-only routes.",
       "files": [
-        "frontend/src/components/PublicLayout.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+        "frontend/src/pages/hr/HrLayout.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,15 +18,18 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-61"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-make-the-footer-logo-brand-area-in-frontend-src-components-publiclayout-tsx-also-navigate-to-the-main-homepage-route-when-clicked-matching-the-header-logo-behavior",
-      "featureTitle": "Make the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` also navigate to the main homepage route (`/`) when clicked, matching the header logo behavior.",
+      "featureId": "feature-create-an-employee-dashboard-page-that-shows-1-the-employee-s-daily-tasks-2-the-employee-s-salary-details-and-3-a-payslips-section-where-the-employee-can-download-automatically-generated-payslips",
+      "featureTitle": "Create an Employee Dashboard page that shows: (1) the employee’s daily tasks, (2) the employee’s salary details, and (3) a payslips section where the employee can download automatically generated payslips.",
       "files": [
-        "frontend/src/components/PublicLayout.tsx"
+        "frontend/src/components/payslips/PayslipsList.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+        "frontend/src/utils/payslipDownload.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -35,7 +40,53 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-62"
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-hr-side-deep-links-actions-from-the-hr-employees-list-so-each-employee-row-has-buttons-links-to-view-that-specific-employee-s-tasks-salary-details-and-payslips",
+      "featureTitle": "Add HR-side deep links/actions from the HR Employees list so each employee row has buttons/links to view that specific employee’s Tasks, Salary details, and Payslips.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AdminProtectedRoute.tsx",
+        "frontend/src/components/employees/EmployeesTable.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/hr/HrEmployeePayslipsPage.tsx",
+        "frontend/src/pages/hr/HrEmployeeSalaryPage.tsx",
+        "frontend/src/pages/hr/HrEmployeeTasksPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-automatic-payslip-generation-and-downloading-payslips-must-be-generated-automatically-from-stored-salary-data-no-manual-uploads-and-employees-must-be-able-to-download-generated-payslips",
+      "featureTitle": "Implement automatic payslip generation and downloading: payslips must be generated automatically from stored salary data (no manual uploads) and employees must be able to download generated payslips.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+        "frontend/src/pages/hr/HrEmployeePayslipsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

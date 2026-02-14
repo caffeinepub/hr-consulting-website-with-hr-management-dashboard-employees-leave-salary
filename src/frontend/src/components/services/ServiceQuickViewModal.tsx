@@ -33,6 +33,11 @@ export default function ServiceQuickViewModal({
     navigate({ to: `/services/${service.slug}` });
   };
 
+  const handleComplianceFirst = () => {
+    onOpenChange(false);
+    navigate({ to: '/compliance-first' });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl motion-reduce:transition-none">
@@ -60,10 +65,15 @@ export default function ServiceQuickViewModal({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
+          {service.slug === 'compliance-legal' && (
+            <Button variant="secondary" onClick={handleComplianceFirst}>
+              Compliance First
+            </Button>
+          )}
           <Button onClick={handleViewFullDetails} className="flex items-center gap-2">
             View Full Details
             <ArrowRight className="h-4 w-4" />

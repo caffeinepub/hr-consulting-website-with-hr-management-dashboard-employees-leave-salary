@@ -1,11 +1,13 @@
 import { Building2, Users, FileCheck, UserPlus, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import ServiceCard from '@/components/ServiceCard';
 import ServiceQuickViewModal from '@/components/services/ServiceQuickViewModal';
 import { services, Service } from '@/data/services';
 import ContactSection from '@/components/contact/ContactSection';
 import LeadershipCard from '@/components/LeadershipCard';
+import HoverSlideInText from '@/components/animations/HoverSlideInText';
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -17,6 +19,8 @@ export default function HomePage() {
   const [heroWords, setHeroWords] = useState<string[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const navigate = useNavigate();
 
   useEffect(() => {
     const headline = "Transform Your Workforce with Expert HR Solutions";
@@ -29,6 +33,29 @@ export default function HomePage() {
     setIsModalOpen(true);
   };
 
+  const handleCardClick = (title: string) => {
+    if (title === 'Expert Team') {
+      navigate({ to: '/team' });
+    } else if (title === 'Compliance First') {
+      navigate({ to: '/compliance-first' });
+    } else if (title === 'Tailored Solutions') {
+      navigate({ to: '/tailored-solutions' });
+    }
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent, title: string) => {
+    if ((title === 'Expert Team' || title === 'Compliance First' || title === 'Tailored Solutions') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      if (title === 'Expert Team') {
+        navigate({ to: '/team' });
+      } else if (title === 'Compliance First') {
+        navigate({ to: '/compliance-first' });
+      } else if (title === 'Tailored Solutions') {
+        navigate({ to: '/tailored-solutions' });
+      }
+    }
+  };
+
   return (
     <div style={{ backgroundColor: '#131E3A' }}>
       {/* Hero Section */}
@@ -36,17 +63,31 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
         <div className="container relative z-10 text-center px-4">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-            {heroWords.map((word, index) => (
-              <span
-                key={index}
-                className="hero-word-animate inline-block mr-3"
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                }}
-              >
-                {word}
-              </span>
-            ))}
+            {heroWords.map((word, index) => {
+              // Apply HoverSlideInText to "HR Solutions" only
+              if (word === 'HR' || word === 'Solutions') {
+                return (
+                  <HoverSlideInText
+                    key={index}
+                    delay={index * 0.1}
+                    className="mr-3"
+                  >
+                    {word}
+                  </HoverSlideInText>
+                );
+              }
+              return (
+                <span
+                  key={index}
+                  className="hero-word-animate inline-block mr-3"
+                  style={{
+                    animationDelay: `${index * 0.1}s`,
+                  }}
+                >
+                  {word}
+                </span>
+              );
+            })}
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto motion-safe:animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             Comprehensive HR consulting, payroll management, and recruitment services tailored to your business needs.
@@ -111,8 +152,13 @@ export default function HomePage() {
                 key={index}
                 className={`about-card p-8 rounded-2xl border border-border/50 hover:border-primary/50 motion-safe:transition-all motion-safe:duration-300 hover:shadow-xl hover:shadow-primary/10 ${
                   aboutRef.isInView ? 'motion-safe:animate-fade-in-up' : 'opacity-0'
-                }`}
+                } ${(item.title === 'Expert Team' || item.title === 'Compliance First' || item.title === 'Tailored Solutions') ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2' : ''}`}
                 style={{ animationDelay: `${index * 0.15}s` }}
+                onClick={() => handleCardClick(item.title)}
+                onKeyDown={(e) => handleCardKeyDown(e, item.title)}
+                tabIndex={(item.title === 'Expert Team' || item.title === 'Compliance First' || item.title === 'Tailored Solutions') ? 0 : undefined}
+                role={(item.title === 'Expert Team' || item.title === 'Compliance First' || item.title === 'Tailored Solutions') ? 'button' : undefined}
+                aria-label={(item.title === 'Expert Team' || item.title === 'Compliance First' || item.title === 'Tailored Solutions') ? `View ${item.title} page` : undefined}
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border-2 border-primary/30 mb-6 ring-4 ring-primary/10">
                   <item.icon className="h-8 w-8 text-primary" />

@@ -1,36 +1,136 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Make header and footer logo navigate to the homepage",
+  "title": "Employee Dashboard (employee-facing) + HR employee deep links for tasks/salary/payslips",
   "requirements": [
     {
-      "id": "REQ-61",
-      "summary": "Make the header logo area in PublicLayout navigate to the main homepage route (/) via client-side navigation, with accessible link semantics.",
+      "id": "REQ-1",
+      "summary": "Add an Employee Dashboard nav item in the left Sheet menu and route it to an employee-facing (non-/hr) page protected by authentication.",
       "acceptanceCriteria": [
-        "When the user clicks the header logo on any route (e.g., `/services`, `/contact`, `/hr/employees`), the app navigates to `/` using client-side navigation (no full page reload).",
-        "The logo click target is keyboard-accessible (focusable) and has appropriate accessible labeling (e.g., link/button semantics and/or aria-label).",
-        "Existing navigation behaviors remain unchanged (smooth-scroll section links, HR Dashboard button routing, mobile menu open/close behavior)."
+        "In the sidebar menu, a new nav item labeled \"Employee Dashboard\" appears below the existing HR Dashboard items.",
+        "Clicking \"Employee Dashboard\" navigates to an employee-facing dashboard route (not under /hr) and renders successfully for authenticated users.",
+        "Unauthenticated users are blocked from the Employee Dashboard route and see the existing unauthenticated access denied screen."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/PublicLayout.tsx",
+          "path": "frontend/src/pages/hr/HrLayout.tsx",
           "operation": "modify",
-          "description": "Update the header logo/brand block to be a single keyboard-focusable client-side navigation element (e.g., TanStack Router Link) that routes to `/` from any route. Add appropriate accessible labeling (e.g., aria-label like \"Go to home\"). Ensure existing smooth-scroll nav link behavior, HR Dashboard navigation, and mobile menu open/close state handling remain unchanged."
+          "description": "Add a second navigation section below the existing \"HR Dashboard\" menu items with a new Link labeled \"Employee Dashboard\" that navigates to the new employee-facing route. Verify the component's usage instructions before implementing (authorization: ensure this link remains safe to show given role protections)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register a new non-/hr route (e.g., /employee-dashboard) and render it inside the existing ProtectedRoute so only authenticated users can access it (showing AccessDeniedScreen for unauthenticated users). Verify the component's usage instructions before implementing (authorization: route protection expectations)."
+        },
+        {
+          "path": "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+          "operation": "create",
+          "description": "Create the employee-facing Employee Dashboard page component to be rendered by the new route (initial scaffold with sections for Tasks, Salary, Payslips)."
         }
       ]
     },
     {
-      "id": "REQ-62",
-      "summary": "Make the footer logo/brand area in PublicLayout navigate to the main homepage route (/) via client-side navigation, matching the header behavior and accessibility.",
+      "id": "REQ-2",
+      "summary": "Implement an Employee Dashboard page showing the logged-in employee’s tasks, salary breakdown, and downloadable payslips, restricted to the logged-in employee.",
       "acceptanceCriteria": [
-        "When the user clicks the footer logo/brand area on any route, the app navigates to `/` using client-side navigation (no full page reload).",
-        "The footer logo/brand click target is keyboard-accessible (focusable) and has appropriate accessible labeling (e.g., link/button semantics and/or aria-label)."
+        "Employee Dashboard displays a Tasks section listing tasks assigned to the logged-in employee (with status and due date).",
+        "Employee Dashboard displays a Salary section showing the logged-in employee’s salary breakdown using existing salary fields (base, PF deduction, bonus, final payable).",
+        "Employee Dashboard displays a Payslips section listing available payslips for the logged-in employee with a download action per payslip.",
+        "All data shown on the Employee Dashboard is restricted to the logged-in employee only (employees cannot view other employees’ data)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/PublicLayout.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update the footer logo/brand block to match the header: wrap the logo + brand name in a client-side navigation element that routes to `/`, and ensure it is focusable with appropriate accessible labeling (e.g., aria-label like \"Go to home\"). Keep all existing footer content and link behaviors unchanged."
+          "description": "Add React Query hooks needed by the Employee Dashboard for employee-safe fetching based on the authenticated principal (e.g., fetch associated EmployeeId for the current principal, then fetch that employee’s tasks, employee record/salary, and payslips). Verify the component's usage instructions before implementing (authorization: handle traps/unauthorized responses gracefully and do not allow UI to request arbitrary employee data for non-admins)."
+        },
+        {
+          "path": "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+          "operation": "modify",
+          "description": "Implement the full Employee Dashboard UI: Tasks list (status + due date), Salary section using the existing SalaryBreakdownCard component for salary fields, and Payslips list with per-item download actions. Verify the component's usage instructions before implementing (authorization: ensure the page only uses caller-derived association and never accepts an employeeId from the URL for employee mode)."
+        },
+        {
+          "path": "frontend/src/utils/payslipDownload.ts",
+          "operation": "create",
+          "description": "Add a small utility to format a Payslip into a downloadable browser file (e.g., build a printable HTML/text payload and trigger a file download via Blob + anchor), to be reused by both employee and HR payslip views."
+        },
+        {
+          "path": "frontend/src/components/payslips/PayslipsList.tsx",
+          "operation": "create",
+          "description": "Create a reusable payslips list component that renders payslip rows (month/year, created date) and calls the shared download utility for each payslip. Verify the component's usage instructions before implementing (authorization: surface permission errors from backend in a user-friendly way)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Add HR Employees table row actions that deep-link to admin/HR-only views for that employee’s tasks, salary details, and payslips.",
+      "acceptanceCriteria": [
+        "Each employee row in the HR Employees table includes actions for \"Tasks\", \"Salary\", and \"Payslips\" (labels may be icons with accessible text).",
+        "Clicking \"Tasks\" navigates to an HR view showing tasks for that employee only; clicking \"Salary\" navigates to an HR view showing salary details for that employee; clicking \"Payslips\" navigates to an HR view listing/generating payslips for that employee.",
+        "These per-employee views are restricted to admin/HR users; non-admin users cannot access them even by URL."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/employees/EmployeesTable.tsx",
+          "operation": "modify",
+          "description": "Add per-row action buttons/links for \"Tasks\", \"Salary\", and \"Payslips\" that navigate to new per-employee HR routes (under /hr) using the row’s employeeId. Keep existing \"View\" action intact. Verify the component's usage instructions before implementing (authorization: HR actions should remain behind admin-only routing)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add new HR routes for per-employee views (tasks, salary, payslips) and wire them to new pages. Also ensure HR routes are admin/HR-restricted (not just authenticated) to prevent non-admin URL access. Verify the component's usage instructions before implementing (authorization: role-based route guarding)."
+        },
+        {
+          "path": "frontend/src/components/auth/AdminProtectedRoute.tsx",
+          "operation": "create",
+          "description": "Create an admin/HR-only route guard component that checks authentication plus role (via existing role queries) and shows AccessDeniedScreen with reason=\"unauthorized\" when the caller lacks admin privileges. Verify the component's usage instructions before implementing (authorization: role-based access control patterns)."
+        },
+        {
+          "path": "frontend/src/pages/hr/HrEmployeeTasksPage.tsx",
+          "operation": "create",
+          "description": "Create an HR-only page to show tasks for a single employee (loaded by employeeId route param), including status and due date, without task creation/editing controls unless already present elsewhere."
+        },
+        {
+          "path": "frontend/src/pages/hr/HrEmployeeSalaryPage.tsx",
+          "operation": "create",
+          "description": "Create an HR-only page to show salary details for a single employee (loaded by employeeId route param) and render salary breakdown using the existing SalaryBreakdownCard component."
+        },
+        {
+          "path": "frontend/src/pages/hr/HrEmployeePayslipsPage.tsx",
+          "operation": "create",
+          "description": "Create an HR-only page to list payslips for a single employee (loaded by employeeId route param) and provide download actions using the shared payslip download utility."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add/extend hooks used by the per-employee HR pages (fetch employee tasks by employeeId, fetch payslips by employeeId, fetch employee record for salary display). Verify the component's usage instructions before implementing (authorization: ensure these calls surface permission failures clearly)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Enable automatic payslip generation and downloading from salary data, with employee-safe and admin-safe download actions in the UI.",
+      "acceptanceCriteria": [
+        "Backend exposes a payslip data model and query methods to list/get payslips for an employee (admin can list any employee; employee can list their own).",
+        "If a requested payslip does not exist for a given period, the system can generate it automatically using the employee’s current stored salary fields and persist it (or deterministically generate it) so it becomes downloadable.",
+        "Frontend download action produces a file download for the payslip (e.g., a PDF via browser print-to-PDF flow or a generated file blob) without requiring any HR upload step.",
+        "Employees can only download their own payslips; HR/admin can download any employee’s payslips."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/employee/EmployeeDashboardPage.tsx",
+          "operation": "modify",
+          "description": "In the Payslips section, implement download actions that fetch the payslip data and trigger a browser download using the shared payslip download utility; handle the case where the backend generates on-demand by re-fetching list/details after a not-found/empty response. Verify the component's usage instructions before implementing (authorization: do not allow employee mode to pass arbitrary employeeId; rely on caller association)."
+        },
+        {
+          "path": "frontend/src/pages/hr/HrEmployeePayslipsPage.tsx",
+          "operation": "modify",
+          "description": "Add admin-only payslip actions: list, download, and a \"Generate\" action for a selected period if supported by existing backend capabilities (e.g., calling the existing generation capability and then refreshing the list). Verify the component's usage instructions before implementing (authorization: admin-only UI and error handling for permission failures)."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a mutation hook used by HR payslip views to trigger automatic generation using the existing backend capability (if available) and refresh payslip queries after success. Verify the component's usage instructions before implementing (authorization: ensure only admin pages invoke generation)."
         }
       ]
     }

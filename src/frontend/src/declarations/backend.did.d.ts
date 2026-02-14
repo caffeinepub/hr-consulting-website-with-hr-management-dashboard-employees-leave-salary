@@ -55,6 +55,22 @@ export interface LeaveEntry {
 }
 export type LeaveId = bigint;
 export interface Location { 'country' : string, 'city' : string }
+export interface OfficeAddress {
+  'title' : string,
+  'email' : string,
+  'addressLines' : Array<string>,
+  'phone' : string,
+}
+export interface Payslip {
+  'id' : PayslipId,
+  'month' : bigint,
+  'leaveBalance' : bigint,
+  'createdAt' : bigint,
+  'year' : bigint,
+  'employeeId' : EmployeeId,
+  'salaryDetails' : Salary,
+}
+export type PayslipId = bigint;
 export interface QuickLeaveMarkRequest {
   'employeeId' : EmployeeId,
   'leaveDate' : bigint,
@@ -66,6 +82,28 @@ export interface Salary {
   'finalPayable' : bigint,
   'bonus' : bigint,
   'pfDeduction' : bigint,
+}
+export interface Task {
+  'id' : TaskId,
+  'title' : string,
+  'assignedTo' : Array<EmployeeId>,
+  'createdAt' : bigint,
+  'dueDate' : bigint,
+  'description' : string,
+  'priority' : TaskPriority,
+  'isComplete' : boolean,
+}
+export type TaskId = bigint;
+export type TaskPriority = { 'low' : null } |
+  { 'high' : null } |
+  { 'medium' : null };
+export interface TaskUpdate {
+  'title' : string,
+  'assignedTo' : Array<EmployeeId>,
+  'dueDate' : bigint,
+  'description' : string,
+  'priority' : TaskPriority,
+  'isComplete' : boolean,
 }
 export interface UserInfo {
   'principal' : Principal,
@@ -81,14 +119,23 @@ export interface _SERVICE {
   'addLeaveEntry' : ActorMethod<[EmployeeId, bigint, bigint, string], LeaveId>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'associateEmployeeWithPrincipal' : ActorMethod<[EmployeeId], undefined>,
   'createEmployee' : ActorMethod<
     [string, bigint, bigint, string, bigint],
     EmployeeId
   >,
   'createJobRole' : ActorMethod<[JobRole], JobRoleId>,
+  'createTask' : ActorMethod<
+    [string, string, bigint, TaskPriority, Array<EmployeeId>],
+    TaskId
+  >,
+  'deleteTask' : ActorMethod<[TaskId], undefined>,
+  'generateMonthlyPayslips' : ActorMethod<[bigint, bigint], undefined>,
   'getAllContactMessages' : ActorMethod<[], Array<ContactMessage>>,
   'getAllEmployeesSorted' : ActorMethod<[], Array<Employee>>,
   'getAllOpenJobRoles' : ActorMethod<[], Array<JobRole>>,
+  'getAllTasks' : ActorMethod<[], Array<Task>>,
+  'getAssociatedEmployeeId' : ActorMethod<[Principal], [] | [EmployeeId]>,
   'getCallerRole' : ActorMethod<[], UserRole>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
@@ -96,9 +143,15 @@ export interface _SERVICE {
   'getEmployee' : ActorMethod<[EmployeeId], [] | [Employee]>,
   'getEmployeeLeaveBalance' : ActorMethod<[EmployeeId], bigint>,
   'getEmployeeLeaveEntries' : ActorMethod<[EmployeeId], Array<LeaveEntry>>,
+  'getEmployeePayslips' : ActorMethod<[EmployeeId], Array<Payslip>>,
+  'getEmployeeTasks' : ActorMethod<[EmployeeId], Array<Task>>,
+  'getOfficeAddress' : ActorMethod<[], OfficeAddress>,
   'getOpenJobRolesCount' : ActorMethod<[], bigint>,
+  'getPayslip' : ActorMethod<[PayslipId], [] | [Payslip]>,
+  'getTask' : ActorMethod<[TaskId], [] | [Task]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getUserRole' : ActorMethod<[Principal], UserRole>,
+  'hasPendingTasks' : ActorMethod<[EmployeeId], boolean>,
   'hasPermission' : ActorMethod<[Principal, UserRole], boolean>,
   'isAdmin' : ActorMethod<[Principal], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -110,6 +163,7 @@ export interface _SERVICE {
     ContactMessageId
   >,
   'updateEmployeeSalary' : ActorMethod<[EmployeeId, bigint], undefined>,
+  'updateTask' : ActorMethod<[TaskId, TaskUpdate], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

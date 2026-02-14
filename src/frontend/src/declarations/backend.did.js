@@ -26,6 +26,12 @@ export const JobRole = IDL.Record({
   'linkedInUrl' : IDL.Text,
   'location' : Location,
 });
+export const TaskPriority = IDL.Variant({
+  'low' : IDL.Null,
+  'high' : IDL.Null,
+  'medium' : IDL.Null,
+});
+export const TaskId = IDL.Nat;
 export const ContactMessageId = IDL.Nat;
 export const ContactMessage = IDL.Record({
   'id' : ContactMessageId,
@@ -53,6 +59,16 @@ export const Employee = IDL.Record({
   'totalLeavesTaken' : IDL.Nat,
   'bonus' : IDL.Nat,
 });
+export const Task = IDL.Record({
+  'id' : TaskId,
+  'title' : IDL.Text,
+  'assignedTo' : IDL.Vec(EmployeeId),
+  'createdAt' : IDL.Int,
+  'dueDate' : IDL.Int,
+  'description' : IDL.Text,
+  'priority' : TaskPriority,
+  'isComplete' : IDL.Bool,
+});
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'email' : IDL.Text,
@@ -68,6 +84,22 @@ export const LeaveEntry = IDL.Record({
   'startDate' : IDL.Int,
   'reason' : IDL.Text,
 });
+export const PayslipId = IDL.Nat;
+export const Payslip = IDL.Record({
+  'id' : PayslipId,
+  'month' : IDL.Nat,
+  'leaveBalance' : IDL.Nat,
+  'createdAt' : IDL.Int,
+  'year' : IDL.Nat,
+  'employeeId' : EmployeeId,
+  'salaryDetails' : Salary,
+});
+export const OfficeAddress = IDL.Record({
+  'title' : IDL.Text,
+  'email' : IDL.Text,
+  'addressLines' : IDL.Vec(IDL.Text),
+  'phone' : IDL.Text,
+});
 export const UserInfo = IDL.Record({
   'principal' : IDL.Principal,
   'role' : UserRole,
@@ -79,6 +111,14 @@ export const QuickLeaveMarkRequest = IDL.Record({
   'leaveType' : IDL.Text,
   'reason' : IDL.Text,
 });
+export const TaskUpdate = IDL.Record({
+  'title' : IDL.Text,
+  'assignedTo' : IDL.Vec(EmployeeId),
+  'dueDate' : IDL.Int,
+  'description' : IDL.Text,
+  'priority' : TaskPriority,
+  'isComplete' : IDL.Bool,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -89,15 +129,29 @@ export const idlService = IDL.Service({
     ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'assignUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'associateEmployeeWithPrincipal' : IDL.Func([EmployeeId], [], []),
   'createEmployee' : IDL.Func(
       [IDL.Text, IDL.Int, IDL.Nat, IDL.Text, IDL.Nat],
       [EmployeeId],
       [],
     ),
   'createJobRole' : IDL.Func([JobRole], [JobRoleId], []),
+  'createTask' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Int, TaskPriority, IDL.Vec(EmployeeId)],
+      [TaskId],
+      [],
+    ),
+  'deleteTask' : IDL.Func([TaskId], [], []),
+  'generateMonthlyPayslips' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'getAllContactMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
   'getAllEmployeesSorted' : IDL.Func([], [IDL.Vec(Employee)], ['query']),
   'getAllOpenJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
+  'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
+  'getAssociatedEmployeeId' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(EmployeeId)],
+      ['query'],
+    ),
   'getCallerRole' : IDL.Func([], [UserRole], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -113,13 +167,19 @@ export const idlService = IDL.Service({
       [IDL.Vec(LeaveEntry)],
       ['query'],
     ),
+  'getEmployeePayslips' : IDL.Func([EmployeeId], [IDL.Vec(Payslip)], ['query']),
+  'getEmployeeTasks' : IDL.Func([EmployeeId], [IDL.Vec(Task)], ['query']),
+  'getOfficeAddress' : IDL.Func([], [OfficeAddress], ['query']),
   'getOpenJobRolesCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'getPayslip' : IDL.Func([PayslipId], [IDL.Opt(Payslip)], ['query']),
+  'getTask' : IDL.Func([TaskId], [IDL.Opt(Task)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
   'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
+  'hasPendingTasks' : IDL.Func([EmployeeId], [IDL.Bool], ['query']),
   'hasPermission' : IDL.Func([IDL.Principal, UserRole], [IDL.Bool], ['query']),
   'isAdmin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
@@ -132,6 +192,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'updateEmployeeSalary' : IDL.Func([EmployeeId, IDL.Nat], [], []),
+  'updateTask' : IDL.Func([TaskId, TaskUpdate], [], []),
 });
 
 export const idlInitArgs = [];
@@ -155,6 +216,12 @@ export const idlFactory = ({ IDL }) => {
     'linkedInUrl' : IDL.Text,
     'location' : Location,
   });
+  const TaskPriority = IDL.Variant({
+    'low' : IDL.Null,
+    'high' : IDL.Null,
+    'medium' : IDL.Null,
+  });
+  const TaskId = IDL.Nat;
   const ContactMessageId = IDL.Nat;
   const ContactMessage = IDL.Record({
     'id' : ContactMessageId,
@@ -182,6 +249,16 @@ export const idlFactory = ({ IDL }) => {
     'totalLeavesTaken' : IDL.Nat,
     'bonus' : IDL.Nat,
   });
+  const Task = IDL.Record({
+    'id' : TaskId,
+    'title' : IDL.Text,
+    'assignedTo' : IDL.Vec(EmployeeId),
+    'createdAt' : IDL.Int,
+    'dueDate' : IDL.Int,
+    'description' : IDL.Text,
+    'priority' : TaskPriority,
+    'isComplete' : IDL.Bool,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text, 'email' : IDL.Text });
   const LeaveEntry = IDL.Record({
     'id' : LeaveId,
@@ -194,6 +271,22 @@ export const idlFactory = ({ IDL }) => {
     'startDate' : IDL.Int,
     'reason' : IDL.Text,
   });
+  const PayslipId = IDL.Nat;
+  const Payslip = IDL.Record({
+    'id' : PayslipId,
+    'month' : IDL.Nat,
+    'leaveBalance' : IDL.Nat,
+    'createdAt' : IDL.Int,
+    'year' : IDL.Nat,
+    'employeeId' : EmployeeId,
+    'salaryDetails' : Salary,
+  });
+  const OfficeAddress = IDL.Record({
+    'title' : IDL.Text,
+    'email' : IDL.Text,
+    'addressLines' : IDL.Vec(IDL.Text),
+    'phone' : IDL.Text,
+  });
   const UserInfo = IDL.Record({
     'principal' : IDL.Principal,
     'role' : UserRole,
@@ -205,6 +298,14 @@ export const idlFactory = ({ IDL }) => {
     'leaveType' : IDL.Text,
     'reason' : IDL.Text,
   });
+  const TaskUpdate = IDL.Record({
+    'title' : IDL.Text,
+    'assignedTo' : IDL.Vec(EmployeeId),
+    'dueDate' : IDL.Int,
+    'description' : IDL.Text,
+    'priority' : TaskPriority,
+    'isComplete' : IDL.Bool,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -215,12 +316,20 @@ export const idlFactory = ({ IDL }) => {
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'assignUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'associateEmployeeWithPrincipal' : IDL.Func([EmployeeId], [], []),
     'createEmployee' : IDL.Func(
         [IDL.Text, IDL.Int, IDL.Nat, IDL.Text, IDL.Nat],
         [EmployeeId],
         [],
       ),
     'createJobRole' : IDL.Func([JobRole], [JobRoleId], []),
+    'createTask' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Int, TaskPriority, IDL.Vec(EmployeeId)],
+        [TaskId],
+        [],
+      ),
+    'deleteTask' : IDL.Func([TaskId], [], []),
+    'generateMonthlyPayslips' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'getAllContactMessages' : IDL.Func(
         [],
         [IDL.Vec(ContactMessage)],
@@ -228,6 +337,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getAllEmployeesSorted' : IDL.Func([], [IDL.Vec(Employee)], ['query']),
     'getAllOpenJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
+    'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
+    'getAssociatedEmployeeId' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(EmployeeId)],
+        ['query'],
+      ),
     'getCallerRole' : IDL.Func([], [UserRole], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -243,13 +358,23 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(LeaveEntry)],
         ['query'],
       ),
+    'getEmployeePayslips' : IDL.Func(
+        [EmployeeId],
+        [IDL.Vec(Payslip)],
+        ['query'],
+      ),
+    'getEmployeeTasks' : IDL.Func([EmployeeId], [IDL.Vec(Task)], ['query']),
+    'getOfficeAddress' : IDL.Func([], [OfficeAddress], ['query']),
     'getOpenJobRolesCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'getPayslip' : IDL.Func([PayslipId], [IDL.Opt(Payslip)], ['query']),
+    'getTask' : IDL.Func([TaskId], [IDL.Opt(Task)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
     'getUserRole' : IDL.Func([IDL.Principal], [UserRole], ['query']),
+    'hasPendingTasks' : IDL.Func([EmployeeId], [IDL.Bool], ['query']),
     'hasPermission' : IDL.Func(
         [IDL.Principal, UserRole],
         [IDL.Bool],
@@ -266,6 +391,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updateEmployeeSalary' : IDL.Func([EmployeeId, IDL.Nat], [], []),
+    'updateTask' : IDL.Func([TaskId, TaskUpdate], [], []),
   });
 };
 

@@ -8,6 +8,7 @@ import EmployeeForm from '@/components/employees/EmployeeForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Search, Plus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function EmployeesPage() {
   const { data: employees, isLoading } = useGetAllEmployees();
@@ -19,57 +20,65 @@ export default function EmployeesPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-bold">Employees</h2>
-          <p className="text-muted-foreground">Manage employee records and information</p>
+    <div className="w-full max-w-[1600px] mx-auto space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Employees</h2>
+          <p className="text-sm text-muted-foreground">Manage employee records and information</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto shrink-0">
               <Plus className="h-4 w-4 mr-2" />
               Add Employee
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-2xl max-h-[90vh] sm:max-h-[85vh] flex flex-col gap-0 p-0">
+            <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 shrink-0 border-b">
               <DialogTitle>Add New Employee</DialogTitle>
             </DialogHeader>
-            <EmployeeForm onSuccess={() => setDialogOpen(false)} />
+            <ScrollArea className="flex-1 px-4 sm:px-6 py-4">
+              <EmployeeForm onSuccess={() => setDialogOpen(false)} />
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
+      {/* Main Content Card */}
+      <Card className="w-full">
+        <CardHeader className="space-y-1">
           <CardTitle>Employee Directory</CardTitle>
           <CardDescription>
             Search and manage all employee records
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="mb-4">
+        <CardContent className="space-y-4">
+          {/* Search Section */}
+          <div className="w-full">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="Search employees by name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 w-full"
               />
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16 w-full" />
-              ))}
-            </div>
-          ) : (
-            <EmployeesTable employees={filteredEmployees || []} />
-          )}
+          {/* Table Section */}
+          <div className="w-full">
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            ) : (
+              <EmployeesTable employees={filteredEmployees || []} />
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

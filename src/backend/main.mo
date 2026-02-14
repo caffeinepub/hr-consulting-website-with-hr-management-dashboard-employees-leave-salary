@@ -1,22 +1,26 @@
 import Map "mo:core/Map";
 import Array "mo:core/Array";
+import List "mo:core/List";
 import Text "mo:core/Text";
 import Nat "mo:core/Nat";
+import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 import Time "mo:core/Time";
-import Principal "mo:core/Principal";
 import Order "mo:core/Order";
+import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
-
-
+(with migration = Migration.run)
 actor {
   public type JobRoleId = Nat;
   public type EmployeeId = Nat;
   public type LeaveId = Nat;
+  public type TaskId = Nat;
   public type ContactMessageId = Nat;
+  public type PayslipId = Nat;
 
   public type Location = {
     city : Text;
@@ -81,6 +85,32 @@ actor {
     reason : Text;
   };
 
+  public type TaskPriority = {
+    #low;
+    #medium;
+    #high;
+  };
+
+  public type Task = {
+    id : TaskId;
+    title : Text;
+    description : Text;
+    dueDate : Int;
+    priority : TaskPriority;
+    assignedTo : [EmployeeId]; // Allow multiple assignees
+    createdAt : Int;
+    isComplete : Bool;
+  };
+
+  public type TaskUpdate = {
+    title : Text;
+    description : Text;
+    dueDate : Int;
+    priority : TaskPriority;
+    assignedTo : [EmployeeId];
+    isComplete : Bool;
+  };
+
   public type UserProfile = {
     name : Text;
     email : Text;
@@ -92,7 +122,28 @@ actor {
     profile : ?UserProfile;
   };
 
-  // Initialize the access control state
+  public type OfficeAddress = {
+    title : Text;
+    addressLines : [Text];
+    phone : Text;
+    email : Text;
+  };
+
+  public type Payslip = {
+    id : PayslipId;
+    employeeId : EmployeeId;
+    month : Nat;
+    year : Nat;
+    salaryDetails : Salary;
+    leaveBalance : Nat;
+    createdAt : Int;
+  };
+
+  public type EmployeePayslipSummary = {
+    employeeId : EmployeeId;
+    payslips : [Payslip];
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -100,12 +151,30 @@ actor {
   let contactMessages = Map.empty<ContactMessageId, ContactMessage>();
   let employees = Map.empty<EmployeeId, Employee>();
   let leaveEntries = Map.empty<LeaveId, LeaveEntry>();
+  let tasks = Map.empty<TaskId, Task>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+  let payslips = Map.empty<PayslipId, Payslip>();
+  let principalToEmployeeId = Map.empty<Principal, EmployeeId>();
 
   var nextJobRoleId = 1;
   var nextEmployeeId = 1;
   var nextLeaveId = 1;
+  var nextTaskId = 1;
   var nextContactMessageId = 1;
+  var nextPayslipId = 1;
+
+  public query ({ caller }) func getOfficeAddress() : async OfficeAddress {
+    {
+      title = "Contact Germanystream";
+      addressLines = [
+        "Schwanallee 27",
+        "35037 Marburg",
+        "Hessen, Germany",
+      ];
+      phone = "+49 1512 0032959";
+      email = "info@germanystream.com";
+    };
+  };
 
   // ============================================================================
   // User Profile Management
@@ -186,6 +255,29 @@ actor {
   };
 
   // ============================================================================
+  // New Employee - Principal Association
+  // ============================================================================
+
+  public shared ({ caller }) func associateEmployeeWithPrincipal(employeeId : EmployeeId) : async () {
+    // Employees can associate themselves, admins can associate anyone
+    let userRole = AccessControl.getUserRole(accessControlState, caller);
+    if (userRole != #admin and userRole != #user) {
+      Runtime.trap("Unauthorized: Only users and admins can associate employees");
+    };
+    switch (employees.get(employeeId)) {
+      case (null) { Runtime.trap("Employee not found") };
+      case (?employee) {
+        principalToEmployeeId.add(caller, employeeId);
+      };
+    };
+  };
+
+  public query ({ caller }) func getAssociatedEmployeeId(principal : Principal) : async ?EmployeeId {
+    // Anyone can check their own association
+    principalToEmployeeId.get(principal);
+  };
+
+  // ============================================================================
   // Job Role Management
   // ============================================================================
 
@@ -211,6 +303,131 @@ actor {
   public query func getOpenJobRolesCount() : async Nat {
     // Public endpoint - no auth required
     jobRoles.values().filter(func(role : JobRole) : Bool { role.isOpen }).size();
+  };
+
+  // ============================================================================
+  // Task Management
+  // ============================================================================
+
+  public shared ({ caller }) func createTask(title : Text, description : Text, dueDate : Int, priority : TaskPriority, assignedTo : [EmployeeId]) : async TaskId {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can create tasks");
+    };
+
+    let newId = nextTaskId;
+    let newTask : Task = {
+      id = newId;
+      title;
+      description;
+      dueDate;
+      priority;
+      assignedTo;
+      createdAt = Time.now();
+      isComplete = false;
+    };
+    tasks.add(newId, newTask);
+    nextTaskId += 1;
+    newId;
+  };
+
+  public shared ({ caller }) func updateTask(taskId : TaskId, update : TaskUpdate) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update tasks");
+    };
+
+    switch (tasks.get(taskId)) {
+      case (null) {
+        Runtime.trap("Task not found");
+      };
+      case (?existingTask) {
+        let updatedTask : Task = {
+          existingTask with
+          title = update.title;
+          description = update.description;
+          dueDate = update.dueDate;
+          priority = update.priority;
+          assignedTo = update.assignedTo;
+          isComplete = update.isComplete;
+        };
+        tasks.add(taskId, updatedTask);
+      };
+    };
+  };
+
+  public shared ({ caller }) func deleteTask(taskId : TaskId) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete tasks");
+    };
+
+    if (not tasks.containsKey(taskId)) {
+      Runtime.trap("Task not found");
+    };
+
+    tasks.remove(taskId);
+  };
+
+  public query ({ caller }) func getTask(taskId : TaskId) : async ?Task {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Must be at least a user to view tasks");
+    };
+    
+    switch (tasks.get(taskId)) {
+      case (null) { null };
+      case (?task) {
+        // Admins can view any task, regular users can only view tasks assigned to them
+        if (AccessControl.isAdmin(accessControlState, caller)) {
+          ?task;
+        } else {
+          // For non-admins, we would need to verify the caller is associated with an employeeId
+          // Since we don't have a direct Principal->EmployeeId mapping, admins should use this
+          // or users should use getEmployeeTasks with their employeeId
+          Runtime.trap("Unauthorized: Regular users should use getEmployeeTasks with their employee ID");
+        };
+      };
+    };
+  };
+
+  public query ({ caller }) func getEmployeeTasks(employeeId : EmployeeId) : async [Task] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can view tasks");
+    };
+    
+    // Only admins can view tasks for any employee
+    // Regular users would need additional logic to verify they own this employeeId
+    // Since there's no Principal->EmployeeId mapping in the current design,
+    // we enforce admin-only access for now
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can view employee tasks");
+    };
+    
+    tasks.values().filter(func(task : Task) : Bool { 
+      task.assignedTo.find(func(eid) { eid == employeeId }) != null 
+    }).toArray();
+  };
+
+  public query ({ caller }) func getAllTasks() : async [Task] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all tasks");
+    };
+    tasks.values().toArray();
+  };
+
+  public query ({ caller }) func hasPendingTasks(employeeId : EmployeeId) : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can check tasks");
+    };
+    
+    // Only admins can check pending tasks for any employee
+    // Regular users would need additional logic to verify they own this employeeId
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can check employee pending tasks");
+    };
+    
+    tasks.values().find(
+      func(task) {
+        task.assignedTo.find(func(eid) { eid == employeeId }) != null and not task.isComplete
+      }
+    ) != null;
   };
 
   // ============================================================================
@@ -383,6 +600,72 @@ actor {
       Runtime.trap("Unauthorized: Only admins can view contact messages");
     };
     contactMessages.get(messageId);
+  };
+
+  // ============================================================================
+  // Payslip Management (New)
+  // ============================================================================
+
+  public shared ({ caller }) func generateMonthlyPayslips(month : Nat, year : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can generate payslips");
+    };
+
+    let currentTime = Time.now();
+
+    // Generate payslips for all employees
+    let payslipEntries = employees.toArray().map(
+      func((employeeId, employee)) {
+        let payslipId = nextPayslipId;
+        let payslip : Payslip = {
+          id = payslipId;
+          employeeId;
+          month;
+          year;
+          salaryDetails = employee.salary;
+          leaveBalance = employee.leaveBalance;
+          createdAt = currentTime;
+        };
+        nextPayslipId += 1;
+        (payslipId, payslip);
+      }
+    );
+
+    // Add payslips to the map
+    payslipEntries.forEach(func(p) { payslips.add(p.0, p.1) });
+  };
+
+  public query ({ caller }) func getEmployeePayslips(employeeId : EmployeeId) : async [Payslip] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can view payslips");
+    };
+
+    // Check if caller is admin or associated with employeeId
+    let isAdmin = AccessControl.isAdmin(accessControlState, caller);
+    let isAssociatedWithEmployee = switch (principalToEmployeeId.get(caller)) {
+      case (?associatedId) { associatedId == employeeId };
+      case (null) { false };
+    };
+
+    if (not isAdmin and not isAssociatedWithEmployee) {
+      Runtime.trap("Unauthorized: You can only view your own payslips");
+    };
+
+    // Return payslips for the employeeId
+    let payslipList = List.empty<Payslip>();
+    payslips.entries().forEach(func((_, payslip)) {
+      if (payslip.employeeId == employeeId) {
+        payslipList.add(payslip);
+      };
+    });
+    payslipList.toArray();
+  };
+
+  public query ({ caller }) func getPayslip(payslipId : PayslipId) : async ?Payslip {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Must be at least a user to view payslips");
+    };
+    payslips.get(payslipId);
   };
 
   // ============================================================================

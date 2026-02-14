@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Make the public site header and footer logo/brand areas behave as Home buttons that always navigate to the main homepage route (`/`) via client-side routing.
+**Goal:** Add an employee-facing dashboard (separate from HR routes) that lets employees view their own tasks, salary details, and download automatically generated payslips, plus HR-side deep links from the Employees list to per-employee tasks/salary/payslips views.
 
 **Planned changes:**
-- Update the header logo area in `frontend/src/components/PublicLayout.tsx` to navigate to `/` on click using client-side navigation, from any current route.
-- Update the footer logo/brand area in `frontend/src/components/PublicLayout.tsx` to navigate to `/` on click using client-side navigation, matching the header behavior.
-- Ensure both logo click targets are keyboard-accessible and appropriately labeled for accessibility, without changing existing nav behaviors (smooth-scroll links, HR Dashboard routing, mobile menu behavior).
+- Add a new “Employee Dashboard” item in the left sidebar under the existing HR Dashboard section, routed to a non-/hr employee-facing page with unauthenticated access blocked.
+- Build an Employee Dashboard page that shows the logged-in employee’s daily tasks (status, due date), salary breakdown (base, PF deduction, bonus, final payable), and a payslips list with per-payslip download actions.
+- Add backend support to link authenticated Principals to an EmployeeId (admin-settable) and enforce access rules: HR/admin can access any employee data; employees can only access their own associated tasks/salary/payslips.
+- Add HR Employees table row actions/deep links for “Tasks”, “Salary”, and “Payslips” that open HR-only per-employee views.
+- Implement automatic payslip generation from stored salary data and enable downloading for both employees (own only) and HR/admin (any employee).
 
-**User-visible outcome:** Clicking the site logo in the header or footer takes the user to the homepage (`/`) from anywhere in the app without a full page reload, and the logo is accessible via keyboard.
+**User-visible outcome:** Employees can open a dedicated Employee Dashboard to see only their own tasks, salary details, and download system-generated payslips; HR/admin can jump from the HR Employees list to view a specific employee’s tasks, salary, and payslips, and download generated payslips.
