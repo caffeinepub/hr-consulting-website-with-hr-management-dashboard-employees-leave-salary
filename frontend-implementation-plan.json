@@ -1,0 +1,47 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix Create Employee Button in HR Dashboard",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Fix the 'Create employee' button in EmployeesPage.tsx to open the employee creation dialog when clicked",
+      "acceptanceCriteria": [
+        "Clicking the 'Create employee' button opens the EmployeeForm dialog",
+        "The dialog displays all employee input fields (name, email, role, department, employee ID, hire date, salary)",
+        "Form validation works correctly before submission",
+        "Successfully creating an employee closes the dialog and refreshes the employee list"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/hr/EmployeesPage.tsx",
+          "operation": "modify",
+          "description": "Add state management for the create employee dialog (isCreateDialogOpen) and wire the 'Create employee' button's onClick handler to open the dialog by calling setIsCreateDialogOpen(true). Ensure the Dialog component wraps EmployeeForm and is controlled by this state, with an onOpenChange handler that closes the dialog when needed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data using the createEmployee mutation",
+      "acceptanceCriteria": [
+        "Form includes fields for name, email, role, department, employee ID, hire date, and salary",
+        "Form validates all required fields before submission",
+        "Successful submission saves the employee to the backend",
+        "Success toast notification appears after employee creation",
+        "Employee list refreshes to show the newly created employee"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/employees/EmployeeForm.tsx",
+          "operation": "modify",
+          "description": "Verify that the form includes all required fields (name, joining date, base salary, PF details, bonus) matching the backend createEmployee signature. Ensure the useCreateEmployee mutation hook is properly invoked on form submission with form validation. Add success toast notification using the toast utility after successful employee creation. Ensure the onSuccess callback (if provided via props) is called to trigger dialog closure and employee list refresh in the parent component."
+        },
+        {
+          "path": "frontend/src/pages/hr/EmployeesPage.tsx",
+          "operation": "modify",
+          "description": "Pass an onSuccess callback prop to EmployeeForm that closes the create dialog (setIsCreateDialogOpen(false)) and ensures the employee list query is refetched or invalidated so the newly created employee appears in the table immediately."
+        }
+      ]
+    }
+  ]
+}

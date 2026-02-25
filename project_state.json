@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Employee management application with HR Dashboard and Employee Dashboard. HR Dashboard includes employee section with create functionality. Employee Dashboard (menu item below Contact) is restricted to employees only and contains Profile, Tasks, Payslips, Time-off Requests, and Leave tracking sections.",
+  "architectural_notes": [
+    "Employee Dashboard accessible via hamburger menu (positioned below Contact)",
+    "Employee Dashboard sections: Profile, Tasks, Payslips, Time-off Requests, Leave tracking",
+    "Role-based access control: Employee Dashboard restricted to employees only",
+    "HR Dashboard includes Employee section with create employee functionality"
+  ],
+  "known_issues": [],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-fix-the-create-employee-button-in-the-hr-dashboard-employee-section-employeespage-tsx-to-open-the-employee-creation-dialog-when-clicked",
+      "title": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-properly-handles-all-required-fields-and-saves-employee-data-to-the-backend-using-the-createemployee-mutation",
+      "title": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Fix Create employee button in HR Dashboard Employee section to open form and save employee data",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "HR Management",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

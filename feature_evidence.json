@@ -1,0 +1,44 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-the-create-employee-button-in-the-hr-dashboard-employee-section-employeespage-tsx-to-open-the-employee-creation-dialog-when-clicked",
+      "featureTitle": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
+      "files": [
+        "frontend/src/pages/hr/EmployeesPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-properly-handles-all-required-fields-and-saves-employee-data-to-the-backend-using-the-createemployee-mutation",
+      "featureTitle": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+      "files": [
+        "frontend/src/components/employees/EmployeeForm.tsx",
+        "frontend/src/pages/hr/EmployeesPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
