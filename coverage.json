@@ -1,50 +1,84 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T06:01:15.776Z",
+  "generatedAt": "2026-02-25T08:54:53.040Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
+        "summary": "Fix the Create Employee form submission in EmployeesPage.tsx so that when the user fills in employee details and submits, the data is actually sent to and persisted in the Motoko backend canister.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/employees/EmployeeForm.tsx",
           "frontend/src/pages/hr/EmployeesPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/hr/EmployeesPage.tsx"
+          "frontend/src/components/employees/EmployeeForm.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+        "summary": "Ensure the employee creation form in EmployeeForm.tsx includes the following fields: Name, Job Title, Department, Email, and Salary. These fields must be validated before submission.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/employees/EmployeeForm.tsx",
+          "frontend/src/components/employees/EmployeeForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/employees/EmployeeForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update the Motoko backend to accept and store all required employee fields: name, job title, department, email, and salary. Ensure the getEmployees query returns all stored employees with these fields.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "After a successful employee creation, the employees list/table in EmployeesPage.tsx must immediately refresh and display the newly created employee without requiring a page reload.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/hr/EmployeesPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/employees/EmployeeForm.tsx",
-          "frontend/src/pages/hr/EmployeesPage.tsx"
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Display a confirmation toast or success message to the user after a new employee is successfully created.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/employees/EmployeeForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/employees/EmployeeForm.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
     "frontend/src/components/employees/EmployeeForm.tsx",
-    "frontend/src/config.ts",
-    "frontend/src/pages/hr/EmployeesPage.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

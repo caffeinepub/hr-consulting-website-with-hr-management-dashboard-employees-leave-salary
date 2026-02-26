@@ -1,61 +1,114 @@
 {
   "kind": "build_request",
-  "title": "Fix Create Employee Button in HR Dashboard",
+  "title": "Fix Create Employee form submission and employee list display",
   "projectName": "HR Management",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
-      "target": "frontend",
+      "text": "Fix the Create Employee form submission in EmployeesPage.tsx so that when the user fills in employee details and submits, the data is actually sent to and persisted in the Motoko backend canister.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-1",
+          "msg-2",
+          "msg-3"
         ],
         "quotes": [
-          "Create empolyee button is not working in employee section in hr dashboard",
-          "it do nothing"
+          "i have entered employee data but it was not executed",
+          "Create employee does not work"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the 'Create employee' button opens the EmployeeForm dialog",
-        "The dialog displays all employee input fields (name, email, role, department, employee ID, hire date, salary)",
-        "Form validation works correctly before submission",
-        "Successfully creating an employee closes the dialog and refreshes the employee list"
+        "Clicking the Create Employee button opens the employee creation form",
+        "Filling in the form fields and submitting calls the backend createEmployee (or equivalent) mutation",
+        "No errors occur during submission and data is persisted to the canister",
+        "The form closes after successful submission"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+      "text": "Ensure the employee creation form in EmployeeForm.tsx includes the following fields: Name, Job Title, Department, Email, and Salary. These fields must be validated before submission.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-3",
+          "msg-4"
         ],
         "quotes": [
-          "create employee data"
+          "new employee data appear in the list"
         ]
       },
       "acceptanceCriteria": [
-        "Form includes fields for name, email, role, department, employee ID, hire date, and salary",
-        "Form validates all required fields before submission",
-        "Successful submission saves the employee to the backend",
-        "Success toast notification appears after employee creation",
-        "Employee list refreshes to show the newly created employee"
+        "Form includes input fields for Name, Job Title, Department, Email, and Salary",
+        "All fields are validated (non-empty, email format for Email, numeric for Salary) before submission",
+        "Validation errors are displayed inline"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Update the Motoko backend to accept and store all required employee fields: name, job title, department, email, and salary. Ensure the getEmployees query returns all stored employees with these fields.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-3",
+          "msg-4"
+        ],
+        "quotes": [
+          "new employee data appear in the list"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Employee type in main.mo includes fields for name, jobTitle, department, email, and salary",
+        "A createEmployee function accepts these fields and persists the employee",
+        "A getEmployees function returns the full list of all stored employees"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "After a successful employee creation, the employees list/table in EmployeesPage.tsx must immediately refresh and display the newly created employee without requiring a page reload.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "new employee data appear in the list"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The employee list/table updates immediately after a successful form submission",
+        "The newly created employee is visible in the table with all filled-in fields",
+        "React Query cache is invalidated on successful mutation to trigger a re-fetch"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Display a confirmation toast or success message to the user after a new employee is successfully created.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": []
+      },
+      "acceptanceCriteria": [
+        "A success notification (toast or inline message) appears after successful employee creation",
+        "The message confirms the employee was created successfully",
+        "The notification disappears automatically after a few seconds"
       ]
     }
   ],
   "constraints": [
-    "Maintain existing EmployeeForm.tsx structure and validation patterns",
-    "Use existing useCreateEmployee mutation hook",
-    "Keep consistent with current HR Dashboard styling and layout",
-    "Do not modify backend schema or main.mo actor structure"
+    "Do not change existing authentication or access control logic",
+    "Do not modify files in frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
+    "Keep all Motoko logic in backend/main.mo single actor"
   ],
   "nonGoals": [
-    "Adding new employee fields beyond those already mentioned",
-    "Modifying employee edit functionality",
-    "Changing employee list display or filtering",
-    "Implementing bulk employee import"
+    "Adding new HR dashboard features beyond employee creation and listing",
+    "Changing the visual theme or overall layout of the HR dashboard",
+    "Implementing employee editing or deletion in this request",
+    "Adding profile photo upload or document attachments"
   ],
   "imageRequirements": {
     "required": [],

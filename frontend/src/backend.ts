@@ -170,9 +170,12 @@ export interface Employee {
     createdAt: bigint;
     joiningDate: bigint;
     isOpen: boolean;
+    email: string;
+    jobTitle: string;
     pfDetails: string;
     totalLeavesTaken: bigint;
     bonus: bigint;
+    department: string;
 }
 export type PayslipId = bigint;
 export type LeaveId = bigint;
@@ -205,7 +208,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignUserRole(user: Principal, role: UserRole): Promise<void>;
     associateEmployeeWithPrincipal(employeeId: EmployeeId): Promise<void>;
-    createEmployee(name: string, joiningDate: bigint, baseSalary: bigint, pfDetails: string, bonus: bigint): Promise<EmployeeId>;
+    createEmployee(name: string, jobTitle: string, department: string, email: string, joiningDate: bigint, salary: Salary): Promise<EmployeeId>;
     createJobRole(jobRoleEntry: JobRole): Promise<JobRoleId>;
     createTask(title: string, description: string, dueDate: bigint, priority: TaskPriority, assignedTo: Array<EmployeeId>): Promise<TaskId>;
     deleteTask(taskId: TaskId): Promise<void>;
@@ -315,17 +318,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async createEmployee(arg0: string, arg1: bigint, arg2: bigint, arg3: string, arg4: bigint): Promise<EmployeeId> {
+    async createEmployee(arg0: string, arg1: string, arg2: string, arg3: string, arg4: bigint, arg5: Salary): Promise<EmployeeId> {
         if (this.processError) {
             try {
-                const result = await this.actor.createEmployee(arg0, arg1, arg2, arg3, arg4);
+                const result = await this.actor.createEmployee(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.createEmployee(arg0, arg1, arg2, arg3, arg4);
+            const result = await this.actor.createEmployee(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }

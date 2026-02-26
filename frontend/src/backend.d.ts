@@ -88,9 +88,12 @@ export interface Employee {
     createdAt: bigint;
     joiningDate: bigint;
     isOpen: boolean;
+    email: string;
+    jobTitle: string;
     pfDetails: string;
     totalLeavesTaken: bigint;
     bonus: bigint;
+    department: string;
 }
 export type PayslipId = bigint;
 export type LeaveId = bigint;
@@ -122,7 +125,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignUserRole(user: Principal, role: UserRole): Promise<void>;
     associateEmployeeWithPrincipal(employeeId: EmployeeId): Promise<void>;
-    createEmployee(name: string, joiningDate: bigint, baseSalary: bigint, pfDetails: string, bonus: bigint): Promise<EmployeeId>;
+    createEmployee(name: string, jobTitle: string, department: string, email: string, joiningDate: bigint, salary: Salary): Promise<EmployeeId>;
     createJobRole(jobRoleEntry: JobRole): Promise<JobRoleId>;
     createTask(title: string, description: string, dueDate: bigint, priority: TaskPriority, assignedTo: Array<EmployeeId>): Promise<TaskId>;
     deleteTask(taskId: TaskId): Promise<void>;

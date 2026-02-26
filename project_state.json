@@ -1,29 +1,44 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Employee management application with HR Dashboard and Employee Dashboard. HR Dashboard includes employee section with create functionality. Employee Dashboard (menu item below Contact) is restricted to employees only and contains Profile, Tasks, Payslips, Time-off Requests, and Leave tracking sections.",
+  "summary": "Employee Management App: Create Employee form with fields (Name, Job Title, Department, Email, Salary), data persisted to Motoko canister backend, new employees appear in list/table after creation, confirmation message on submission.",
   "architectural_notes": [
-    "Employee Dashboard accessible via hamburger menu (positioned below Contact)",
-    "Employee Dashboard sections: Profile, Tasks, Payslips, Time-off Requests, Leave tracking",
-    "Role-based access control: Employee Dashboard restricted to employees only",
-    "HR Dashboard includes Employee section with create employee functionality"
+    "Employee data persisted in Motoko canister backend"
   ],
-  "known_issues": [],
+  "known_issues": [
+    "Create Employee button not working — form submission not executing/saving data"
+  ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-fix-the-create-employee-button-in-the-hr-dashboard-employee-section-employeespage-tsx-to-open-the-employee-creation-dialog-when-clicked",
-      "title": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
+      "id": "feature-fix-the-create-employee-form-submission-in-employeespage-tsx-so-that-when-the-user-fills-in-employee-details-and-submits-the-data-is-actually-sent-to-and-persisted-in-the-motoko-backend-canister",
+      "title": "Fix the Create Employee form submission in EmployeesPage.tsx so that when the user fills in employee details and submits, the data is actually sent to and persisted in the Motoko backend canister.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-properly-handles-all-required-fields-and-saves-employee-data-to-the-backend-using-the-createemployee-mutation",
-      "title": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+      "id": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-includes-the-following-fields-name-job-title-department-email-and-salary-these-fields-must-be-validated-before-submission",
+      "title": "Ensure the employee creation form in EmployeeForm.tsx includes the following fields: Name, Job Title, Department, Email, and Salary. These fields must be validated before submission.",
       "reqIds": [
         "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-a-successful-employee-creation-the-employees-list-table-in-employeespage-tsx-must-immediately-refresh-and-display-the-newly-created-employee-without-requiring-a-page-reload",
+      "title": "After a successful employee creation, the employees list/table in EmployeesPage.tsx must immediately refresh and display the newly created employee without requiring a page reload.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-confirmation-toast-or-success-message-to-the-user-after-a-new-employee-is-successfully-created",
+      "title": "Display a confirmation toast or success message to the user after a new employee is successfully created.",
+      "reqIds": [
+        "REQ-5"
       ],
       "version": 1
     }
@@ -31,12 +46,39 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix Create employee button in HR Dashboard Employee section to open form and save employee data",
+      "summary": "Fix Create Employee button so form submission saves data to backend and new employee appears in list",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Employee form with fields: Name, Job Title, Department, Email, Salary",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Employee list/table that displays all created employees",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Confirmation message shown after successful employee creation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Update the Motoko backend to accept and store all required employee fields: name, job title, department, email, and salary. Ensure the getEmployees query returns all stored employees with these fields.",
+      "reqIds": [
+        "REQ-3"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "HR Management",
+  "gameProjectType": "none",
+  "projectName": "Employee Management App",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -15,6 +15,12 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const Salary = IDL.Record({
+  'base' : IDL.Nat,
+  'finalPayable' : IDL.Nat,
+  'bonus' : IDL.Nat,
+  'pfDeduction' : IDL.Nat,
+});
 export const JobRoleId = IDL.Nat;
 export const Location = IDL.Record({ 'country' : IDL.Text, 'city' : IDL.Text });
 export const JobRole = IDL.Record({
@@ -32,12 +38,6 @@ export const TaskPriority = IDL.Variant({
   'medium' : IDL.Null,
 });
 export const TaskId = IDL.Nat;
-export const Salary = IDL.Record({
-  'base' : IDL.Nat,
-  'finalPayable' : IDL.Nat,
-  'bonus' : IDL.Nat,
-  'pfDeduction' : IDL.Nat,
-});
 export const Employee = IDL.Record({
   'id' : EmployeeId,
   'salary' : Salary,
@@ -46,9 +46,12 @@ export const Employee = IDL.Record({
   'createdAt' : IDL.Int,
   'joiningDate' : IDL.Int,
   'isOpen' : IDL.Bool,
+  'email' : IDL.Text,
+  'jobTitle' : IDL.Text,
   'pfDetails' : IDL.Text,
   'totalLeavesTaken' : IDL.Nat,
   'bonus' : IDL.Nat,
+  'department' : IDL.Text,
 });
 export const Task = IDL.Record({
   'id' : TaskId,
@@ -127,7 +130,7 @@ export const idlService = IDL.Service({
   'assignUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'associateEmployeeWithPrincipal' : IDL.Func([EmployeeId], [], []),
   'createEmployee' : IDL.Func(
-      [IDL.Text, IDL.Int, IDL.Nat, IDL.Text, IDL.Nat],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Int, Salary],
       [EmployeeId],
       [],
     ),
@@ -210,6 +213,12 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const Salary = IDL.Record({
+    'base' : IDL.Nat,
+    'finalPayable' : IDL.Nat,
+    'bonus' : IDL.Nat,
+    'pfDeduction' : IDL.Nat,
+  });
   const JobRoleId = IDL.Nat;
   const Location = IDL.Record({ 'country' : IDL.Text, 'city' : IDL.Text });
   const JobRole = IDL.Record({
@@ -227,12 +236,6 @@ export const idlFactory = ({ IDL }) => {
     'medium' : IDL.Null,
   });
   const TaskId = IDL.Nat;
-  const Salary = IDL.Record({
-    'base' : IDL.Nat,
-    'finalPayable' : IDL.Nat,
-    'bonus' : IDL.Nat,
-    'pfDeduction' : IDL.Nat,
-  });
   const Employee = IDL.Record({
     'id' : EmployeeId,
     'salary' : Salary,
@@ -241,9 +244,12 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : IDL.Int,
     'joiningDate' : IDL.Int,
     'isOpen' : IDL.Bool,
+    'email' : IDL.Text,
+    'jobTitle' : IDL.Text,
     'pfDetails' : IDL.Text,
     'totalLeavesTaken' : IDL.Nat,
     'bonus' : IDL.Nat,
+    'department' : IDL.Text,
   });
   const Task = IDL.Record({
     'id' : TaskId,
@@ -319,7 +325,7 @@ export const idlFactory = ({ IDL }) => {
     'assignUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'associateEmployeeWithPrincipal' : IDL.Func([EmployeeId], [], []),
     'createEmployee' : IDL.Func(
-        [IDL.Text, IDL.Int, IDL.Nat, IDL.Text, IDL.Nat],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Int, Salary],
         [EmployeeId],
         [],
       ),

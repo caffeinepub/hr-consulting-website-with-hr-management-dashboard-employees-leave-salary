@@ -12,12 +12,23 @@ interface EmployeeFormProps {
   onSuccess?: () => void;
 }
 
+interface FormErrors {
+  name?: string;
+  jobTitle?: string;
+  department?: string;
+  email?: string;
+  joiningDate?: string;
+  baseSalary?: string;
+}
+
 export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps) {
   const [name, setName] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [department, setDepartment] = useState('');
+  const [email, setEmail] = useState('');
   const [joiningDate, setJoiningDate] = useState('');
   const [baseSalary, setBaseSalary] = useState('');
-  const [pfDetails, setPfDetails] = useState('');
-  const [bonus, setBonus] = useState('');
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const createMutation = useCreateEmployee();
   const updateMutation = useUpdateEmployeeSalary();
@@ -25,33 +36,48 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
   useEffect(() => {
     if (employee) {
       setName(employee.name);
+      setJobTitle(employee.jobTitle);
+      setDepartment(employee.department);
+      setEmail(employee.email);
       setJoiningDate(new Date(Number(employee.joiningDate) / 1000000).toISOString().split('T')[0]);
       setBaseSalary(Number(employee.salary.base).toString());
-      setPfDetails(employee.pfDetails);
-      setBonus(Number(employee.bonus).toString());
     }
   }, [employee]);
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name.trim()) newErrors.name = 'Employee name is required';
+    if (!employee) {
+      if (!jobTitle.trim()) newErrors.jobTitle = 'Job title is required';
+      if (!department.trim()) newErrors.department = 'Department is required';
+      if (!email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!emailRegex.test(email.trim())) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+      if (!joiningDate) newErrors.joiningDate = 'Joining date is required';
+    }
+    if (!baseSalary) {
+      newErrors.baseSalary = 'Base salary is required';
+    } else {
+      const salaryNum = parseInt(baseSalary);
+      if (isNaN(salaryNum) || salaryNum <= 0) {
+        newErrors.baseSalary = 'Please enter a valid salary greater than zero';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim() || !joiningDate || !baseSalary || !pfDetails.trim() || !bonus) {
-      toast.error('Please fill in all fields');
-      return;
-    }
+    if (!validateForm()) return;
 
     const salaryNum = parseInt(baseSalary);
-    const bonusNum = parseInt(bonus);
-
-    if (isNaN(salaryNum) || salaryNum < 0) {
-      toast.error('Please enter a valid base salary');
-      return;
-    }
-
-    if (isNaN(bonusNum) || bonusNum < 0) {
-      toast.error('Please enter a valid bonus amount');
-      return;
-    }
 
     try {
       if (employee) {
@@ -62,20 +88,31 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
         toast.success('Employee salary updated successfully!');
       } else {
         const joiningDateNano = BigInt(new Date(joiningDate).getTime()) * BigInt(1000000);
+        const pfDeduction = Math.round(salaryNum * 0.12);
+        const salary = {
+          base: BigInt(salaryNum),
+          pfDeduction: BigInt(pfDeduction),
+          bonus: BigInt(0),
+          finalPayable: BigInt(salaryNum - pfDeduction),
+        };
+
         await createMutation.mutateAsync({
-          name,
+          name: name.trim(),
+          jobTitle: jobTitle.trim(),
+          department: department.trim(),
+          email: email.trim(),
           joiningDate: joiningDateNano,
-          baseSalary: BigInt(salaryNum),
-          pfDetails,
-          bonus: BigInt(bonusNum),
+          salary,
         });
         toast.success('Employee created successfully!');
         // Reset form fields after successful creation
         setName('');
+        setJobTitle('');
+        setDepartment('');
+        setEmail('');
         setJoiningDate('');
         setBaseSalary('');
-        setPfDetails('');
-        setBonus('');
+        setErrors({});
       }
       // Call onSuccess callback to close dialog and refresh list
       onSuccess?.();
@@ -89,67 +126,103 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+      {/* Name */}
+      <div className="space-y-1">
         <Label htmlFor="name">Employee Name *</Label>
         <Input
           id="name"
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => { setName(e.target.value); setErrors(prev => ({ ...prev, name: undefined })); }}
           placeholder="Full name"
-          required
           disabled={isPending || !!employee}
         />
+        {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
       </div>
-      <div>
-        <Label htmlFor="joiningDate">Joining Date *</Label>
-        <Input
-          id="joiningDate"
-          type="date"
-          value={joiningDate}
-          onChange={(e) => setJoiningDate(e.target.value)}
-          required
-          disabled={isPending || !!employee}
-        />
-      </div>
-      <div>
+
+      {/* Job Title - only for new employees */}
+      {!employee && (
+        <div className="space-y-1">
+          <Label htmlFor="jobTitle">Job Title *</Label>
+          <Input
+            id="jobTitle"
+            type="text"
+            value={jobTitle}
+            onChange={(e) => { setJobTitle(e.target.value); setErrors(prev => ({ ...prev, jobTitle: undefined })); }}
+            placeholder="e.g. Software Engineer"
+            disabled={isPending}
+          />
+          {errors.jobTitle && <p className="text-xs text-destructive">{errors.jobTitle}</p>}
+        </div>
+      )}
+
+      {/* Department - only for new employees */}
+      {!employee && (
+        <div className="space-y-1">
+          <Label htmlFor="department">Department *</Label>
+          <Input
+            id="department"
+            type="text"
+            value={department}
+            onChange={(e) => { setDepartment(e.target.value); setErrors(prev => ({ ...prev, department: undefined })); }}
+            placeholder="e.g. Engineering"
+            disabled={isPending}
+          />
+          {errors.department && <p className="text-xs text-destructive">{errors.department}</p>}
+        </div>
+      )}
+
+      {/* Email - only for new employees */}
+      {!employee && (
+        <div className="space-y-1">
+          <Label htmlFor="email">Email *</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setErrors(prev => ({ ...prev, email: undefined })); }}
+            placeholder="employee@company.com"
+            disabled={isPending}
+          />
+          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+        </div>
+      )}
+
+      {/* Joining Date - only for new employees */}
+      {!employee && (
+        <div className="space-y-1">
+          <Label htmlFor="joiningDate">Joining Date *</Label>
+          <Input
+            id="joiningDate"
+            type="date"
+            value={joiningDate}
+            onChange={(e) => { setJoiningDate(e.target.value); setErrors(prev => ({ ...prev, joiningDate: undefined })); }}
+            disabled={isPending}
+          />
+          {errors.joiningDate && <p className="text-xs text-destructive">{errors.joiningDate}</p>}
+        </div>
+      )}
+
+      {/* Base Salary */}
+      <div className="space-y-1">
         <Label htmlFor="baseSalary">Base Salary (₹) *</Label>
         <Input
           id="baseSalary"
           type="number"
           value={baseSalary}
-          onChange={(e) => setBaseSalary(e.target.value)}
+          onChange={(e) => { setBaseSalary(e.target.value); setErrors(prev => ({ ...prev, baseSalary: undefined })); }}
           placeholder="50000"
-          required
           disabled={isPending}
-          min="0"
+          min="1"
         />
+        {errors.baseSalary && <p className="text-xs text-destructive">{errors.baseSalary}</p>}
+        {!employee && baseSalary && parseInt(baseSalary) > 0 && (
+          <p className="text-xs text-muted-foreground">
+            PF deduction (12%): ₹{Math.round(parseInt(baseSalary) * 0.12).toLocaleString('en-IN')}
+          </p>
+        )}
       </div>
-      <div>
-        <Label htmlFor="pfDetails">PF Details *</Label>
-        <Input
-          id="pfDetails"
-          type="text"
-          value={pfDetails}
-          onChange={(e) => setPfDetails(e.target.value)}
-          placeholder="PF Account Number"
-          required
-          disabled={isPending || !!employee}
-        />
-      </div>
-      <div>
-        <Label htmlFor="bonus">Bonus (₹) *</Label>
-        <Input
-          id="bonus"
-          type="number"
-          value={bonus}
-          onChange={(e) => setBonus(e.target.value)}
-          placeholder="5000"
-          required
-          disabled={isPending || !!employee}
-          min="0"
-        />
-      </div>
+
       <Button type="submit" disabled={isPending} className="w-full">
         {isPending ? (
           <>
@@ -157,7 +230,7 @@ export default function EmployeeForm({ employee, onSuccess }: EmployeeFormProps)
             {employee ? 'Updating...' : 'Creating...'}
           </>
         ) : employee ? (
-          'Update Employee'
+          'Update Salary'
         ) : (
           'Create Employee'
         )}

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { Employee, JobRole, LeaveEntry, UserProfile, UserRole, UserInfo, QuickLeaveMarkRequest, Task, TaskUpdate, Payslip, ContactMessageId, LeaveSummary } from '../backend';
+import type { Employee, JobRole, LeaveEntry, UserProfile, UserRole, UserInfo, QuickLeaveMarkRequest, Task, TaskUpdate, Payslip, ContactMessageId, LeaveSummary, Salary } from '../backend';
 import { TaskPriority } from '../backend';
 import { Principal } from '@dfinity/principal';
 
@@ -138,18 +138,20 @@ export function useCreateEmployee() {
   return useMutation({
     mutationFn: async (data: {
       name: string;
+      jobTitle: string;
+      department: string;
+      email: string;
       joiningDate: bigint;
-      baseSalary: bigint;
-      pfDetails: string;
-      bonus: bigint;
+      salary: Salary;
     }) => {
       if (!actor) throw new Error('Actor not available');
       return actor.createEmployee(
         data.name,
+        data.jobTitle,
+        data.department,
+        data.email,
         data.joiningDate,
-        data.baseSalary,
-        data.pfDetails,
-        data.bonus
+        data.salary
       );
     },
     onSuccess: () => {
@@ -290,7 +292,7 @@ export function useGetEmployeeTasks(employeeId: bigint | null) {
     queryFn: async () => {
       if (!actor || !employeeId) return [];
       const allTasks = await actor.getAllTasksPublic();
-      return allTasks.filter(task => 
+      return allTasks.filter(task =>
         task.assignedTo.some(id => id === employeeId)
       );
     },
@@ -321,7 +323,6 @@ export function useCreateTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
     },
   });
 }
@@ -337,7 +338,6 @@ export function useUpdateTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
     },
   });
 }
@@ -353,7 +353,6 @@ export function useDeleteTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['employeeTasks'] });
     },
   });
 }
@@ -386,41 +385,16 @@ export function useGenerateMonthlyPayslips() {
   });
 }
 
-// Stub for contact messages (not implemented in backend)
 export function useGetAllContactMessages() {
+  // Stub: backend doesn't support querying contact messages yet
   return useQuery<ContactMessage[]>({
     queryKey: ['contactMessages'],
-    queryFn: async () => {
-      // Backend doesn't have a query method for contact messages
-      return [];
-    },
+    queryFn: async () => [],
     enabled: false,
   });
 }
 
-// Employee Self-Service Hooks
-
-export function useIsEmployeeAssociated() {
-  const { actor, isFetching } = useActor();
-  const { identity } = useInternetIdentity();
-
-  return useQuery<boolean>({
-    queryKey: ['isEmployeeAssociated'],
-    queryFn: async () => {
-      if (!actor || !identity) return false;
-      try {
-        const employeeId = await actor.getCallerAssociatedEmployeeId();
-        return !!employeeId;
-      } catch (error) {
-        // If the call traps (no association), return false
-        return false;
-      }
-    },
-    enabled: !!actor && !!identity && !isFetching,
-    retry: false,
-  });
-}
-
+// Employee self-service hooks
 export function useGetMyEmployee() {
   const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
@@ -456,7 +430,7 @@ export function useGetMyLeaveEntriesAndSummary() {
   const { identity } = useInternetIdentity();
 
   return useQuery<[LeaveEntry[], LeaveSummary]>({
-    queryKey: ['myLeaveEntriesAndSummary'],
+    queryKey: ['myLeaveEntries'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return actor.getMyLeaveEntriesAndSummary();
@@ -493,16 +467,50 @@ export function useSubmitMyTimeOffRequest() {
       reason: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.submitMyTimeOffRequest(
-        data.startDate,
-        data.endDate,
-        data.leaveType,
-        data.reason
-      );
+      return actor.submitMyTimeOffRequest(data.startDate, data.endDate, data.leaveType, data.reason);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myLeaveEntriesAndSummary'] });
-      queryClient.invalidateQueries({ queryKey: ['myEmployee'] });
+      queryClient.invalidateQueries({ queryKey: ['myLeaveEntries'] });
     },
+  });
+}
+
+export function useAssociateEmployeeWithPrincipal() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (employeeId: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.associateEmployeeWithPrincipal(employeeId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myEmployee'] });
+      queryClient.invalidateQueries({ queryKey: ['isEmployeeAssociated'] });
+    },
+  });
+}
+
+/**
+ * Returns true if the currently authenticated user has an associated employee record.
+ * Gracefully returns false if the user is not authenticated or has no association.
+ */
+export function useIsEmployeeAssociated() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<boolean>({
+    queryKey: ['isEmployeeAssociated'],
+    queryFn: async () => {
+      if (!actor || !identity) return false;
+      try {
+        await actor.getCallerAssociatedEmployeeId();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    enabled: !!actor && !!identity && !isFetching,
+    retry: false,
   });
 }

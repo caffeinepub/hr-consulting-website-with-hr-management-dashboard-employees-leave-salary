@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-create-employee-button-in-the-hr-dashboard-employee-section-employeespage-tsx-to-open-the-employee-creation-dialog-when-clicked",
-      "featureTitle": "Fix the 'Create employee' button in the HR Dashboard Employee section (EmployeesPage.tsx) to open the employee creation dialog when clicked",
+      "featureId": "feature-fix-the-create-employee-form-submission-in-employeespage-tsx-so-that-when-the-user-fills-in-employee-details-and-submits-the-data-is-actually-sent-to-and-persisted-in-the-motoko-backend-canister",
+      "featureTitle": "Fix the Create Employee form submission in EmployeesPage.tsx so that when the user fills in employee details and submits, the data is actually sent to and persisted in the Motoko backend canister.",
       "files": [
-        "frontend/src/pages/hr/EmployeesPage.tsx"
+        "frontend/src/components/employees/EmployeeForm.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -21,11 +21,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-properly-handles-all-required-fields-and-saves-employee-data-to-the-backend-using-the-createemployee-mutation",
-      "featureTitle": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data to the backend using the createEmployee mutation",
+      "featureId": "feature-ensure-the-employee-creation-form-in-employeeform-tsx-includes-the-following-fields-name-job-title-department-email-and-salary-these-fields-must-be-validated-before-submission",
+      "featureTitle": "Ensure the employee creation form in EmployeeForm.tsx includes the following fields: Name, Job Title, Department, Email, and Salary. These fields must be validated before submission.",
       "files": [
-        "frontend/src/components/employees/EmployeeForm.tsx",
-        "frontend/src/pages/hr/EmployeesPage.tsx"
+        "frontend/src/components/employees/EmployeeForm.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -37,6 +36,44 @@
       ],
       "testIds": [
         "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-after-a-successful-employee-creation-the-employees-list-table-in-employeespage-tsx-must-immediately-refresh-and-display-the-newly-created-employee-without-requiring-a-page-reload",
+      "featureTitle": "After a successful employee creation, the employees list/table in EmployeesPage.tsx must immediately refresh and display the newly created employee without requiring a page reload.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-a-confirmation-toast-or-success-message-to-the-user-after-a-new-employee-is-successfully-created",
+      "featureTitle": "Display a confirmation toast or success message to the user after a new employee is successfully created.",
+      "files": [
+        "frontend/src/components/employees/EmployeeForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

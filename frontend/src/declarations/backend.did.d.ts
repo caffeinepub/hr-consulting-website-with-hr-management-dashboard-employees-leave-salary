@@ -19,9 +19,12 @@ export interface Employee {
   'createdAt' : bigint,
   'joiningDate' : bigint,
   'isOpen' : boolean,
+  'email' : string,
+  'jobTitle' : string,
   'pfDetails' : string,
   'totalLeavesTaken' : bigint,
   'bonus' : bigint,
+  'department' : string,
 }
 export type EmployeeId = bigint;
 export interface JobRole {
@@ -117,7 +120,7 @@ export interface _SERVICE {
   'assignUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'associateEmployeeWithPrincipal' : ActorMethod<[EmployeeId], undefined>,
   'createEmployee' : ActorMethod<
-    [string, bigint, bigint, string, bigint],
+    [string, string, string, string, bigint, Salary],
     EmployeeId
   >,
   'createJobRole' : ActorMethod<[JobRole], JobRoleId>,

@@ -1,45 +1,80 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix Create Employee Button in HR Dashboard",
+  "title": "Fix Create Employee form submission and employee list display",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Fix the 'Create employee' button in EmployeesPage.tsx to open the employee creation dialog when clicked",
+      "summary": "Fix the Create Employee form submission so employee data is sent to and persisted in the backend canister",
       "acceptanceCriteria": [
-        "Clicking the 'Create employee' button opens the EmployeeForm dialog",
-        "The dialog displays all employee input fields (name, email, role, department, employee ID, hire date, salary)",
-        "Form validation works correctly before submission",
-        "Successfully creating an employee closes the dialog and refreshes the employee list"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/hr/EmployeesPage.tsx",
-          "operation": "modify",
-          "description": "Add state management for the create employee dialog (isCreateDialogOpen) and wire the 'Create employee' button's onClick handler to open the dialog by calling setIsCreateDialogOpen(true). Ensure the Dialog component wraps EmployeeForm and is controlled by this state, with an onOpenChange handler that closes the dialog when needed."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Ensure the employee creation form in EmployeeForm.tsx properly handles all required fields and saves employee data using the createEmployee mutation",
-      "acceptanceCriteria": [
-        "Form includes fields for name, email, role, department, employee ID, hire date, and salary",
-        "Form validates all required fields before submission",
-        "Successful submission saves the employee to the backend",
-        "Success toast notification appears after employee creation",
-        "Employee list refreshes to show the newly created employee"
+        "Clicking the Create Employee button opens the employee creation form",
+        "Filling in the form fields and submitting calls the backend createEmployee mutation",
+        "No errors occur during submission and data is persisted to the canister",
+        "The form closes after successful submission"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/employees/EmployeeForm.tsx",
           "operation": "modify",
-          "description": "Verify that the form includes all required fields (name, joining date, base salary, PF details, bonus) matching the backend createEmployee signature. Ensure the useCreateEmployee mutation hook is properly invoked on form submission with form validation. Add success toast notification using the toast utility after successful employee creation. Ensure the onSuccess callback (if provided via props) is called to trigger dialog closure and employee list refresh in the parent component."
+          "description": "Fix the employee creation form submission to properly call the backend createEmployee mutation. Ensure the form collects all required fields (name, jobTitle, department, email, joiningDate, salary) and converts joiningDate to nanoseconds timestamp. Wire the submission handler to use the useCreateEmployee mutation hook with proper error handling. Ensure the onSuccess callback is invoked after successful creation to trigger form closure and list refresh."
         },
         {
           "path": "frontend/src/pages/hr/EmployeesPage.tsx",
           "operation": "modify",
-          "description": "Pass an onSuccess callback prop to EmployeeForm that closes the create dialog (setIsCreateDialogOpen(false)) and ensures the employee list query is refetched or invalidated so the newly created employee appears in the table immediately."
+          "description": "Fix the employee creation dialog integration to ensure the EmployeeForm component is properly wired with the dialog state. Ensure the dialog closes after successful employee creation by handling the onSuccess callback from EmployeeForm. Verify the employee list query is invalidated after creation to immediately show the new employee."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Ensure the employee creation form includes all required fields with proper validation",
+      "acceptanceCriteria": [
+        "Form includes input fields for Name, Job Title, Department, Email, and Salary",
+        "All fields are validated (non-empty, email format for Email, numeric for Salary) before submission",
+        "Validation errors are displayed inline"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/employees/EmployeeForm.tsx",
+          "operation": "modify",
+          "description": "Add comprehensive form validation for all employee fields. Implement validation rules: name (non-empty string), jobTitle (non-empty string), department (non-empty string), email (valid email format using regex or validator), and salary base (numeric, greater than zero). Display inline validation error messages below each field when validation fails. Prevent form submission if any validation errors exist."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Ensure the employees list immediately refreshes and displays newly created employee without page reload",
+      "acceptanceCriteria": [
+        "The employee list/table updates immediately after a successful form submission",
+        "The newly created employee is visible in the table with all filled-in fields",
+        "React Query cache is invalidated on successful mutation to trigger a re-fetch"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Verify the useCreateEmployee mutation hook includes proper onSuccess handling that invalidates the 'allEmployees' query key to trigger automatic refetch. Ensure the mutation returns the newly created employee ID and that the query client invalidation is properly configured."
+        },
+        {
+          "path": "frontend/src/pages/hr/EmployeesPage.tsx",
+          "operation": "modify",
+          "description": "Ensure the employees list uses the query data from useGetAllEmployees hook and that the component properly reacts to query cache updates. Verify the EmployeesTable component receives updated employee data after successful creation without requiring manual refresh."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Display a success toast notification after employee creation",
+      "acceptanceCriteria": [
+        "A success notification (toast or inline message) appears after successful employee creation",
+        "The message confirms the employee was created successfully",
+        "The notification disappears automatically after a few seconds"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/employees/EmployeeForm.tsx",
+          "operation": "modify",
+          "description": "Add toast notification using the toast utility (from shadcn/ui components) in the onSuccess callback of the useCreateEmployee mutation. Display a success message such as 'Employee created successfully' with appropriate styling. Ensure the toast automatically dismisses after a few seconds."
         }
       ]
     }
